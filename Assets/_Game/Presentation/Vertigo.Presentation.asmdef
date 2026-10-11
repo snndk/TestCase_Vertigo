@@ -1,0 +1,11 @@
+{
+    "name": "Vertigo.Presentation",
+    "rootNamespace": "Vertigo.Presentation",
+    "references": [
+        "Vertigo.Runtime"
+    ],
+    "autoReferenced": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "noEngineReferences": true
+}

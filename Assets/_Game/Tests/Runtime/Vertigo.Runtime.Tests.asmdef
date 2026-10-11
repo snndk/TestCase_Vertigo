@@ -1,0 +1,19 @@
+{
+    "name": "Vertigo.Runtime.Tests",
+    "rootNamespace": "Vertigo.Tests.Runtime",
+    "references": [
+        "Vertigo.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "autoReferenced": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "noEngineReferences": true
+}
