@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4474c149db9e4c419a075ae702d60f2, type: 3}
+  m_Name: gold
+  m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Authoring.WheelTierAsset
+  wheel: {fileID: 21300000, guid: 516b845cec04f814893a071381f26cdd, type: 3}
+  indicator: {fileID: 21300000, guid: 5693d71100808b74f84ae49af6c2ee9b, type: 3}
+  pool:
+  - slice: {fileID: 11400000, guid: 6770d568f7b75234494e7f6e4e72c51d, type: 2}
+    weight: 100
+  - slice: {fileID: 11400000, guid: 7023a9639261dd0429d0f670347d3d68, type: 2}
+    weight: 100
+  - slice: {fileID: 11400000, guid: 9d04ef3b6298b2e46bd12f8ba481b12f, type: 2}
+    weight: 100
+  - slice: {fileID: 11400000, guid: 20d4615f351c9b24ba7f9b5886d1d693, type: 2}
+    weight: 100
+  - slice: {fileID: 11400000, guid: fb59e2e854d751e4e823942b21a5c1db, type: 2}
+    weight: 100
+  - slice: {fileID: 11400000, guid: 2efb515818bffec4a8ac61d58049483c, type: 2}
+    weight: 100
+  - slice: {fileID: 11400000, guid: 9fe4e74fa1203744893c7df5a4d3be50, type: 2}
+    weight: 100
+  - slice: {fileID: 11400000, guid: d3be2080f80c25041a533ba0bcd2dd87, type: 2}
+    weight: 100
+  title: GOLDEN SPIN
+  titleColor: {r: 1, g: 0.78, b: 0.25, a: 1}
+  statusMessage: RISK-FREE SPIN - NO BOMB

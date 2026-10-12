@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4474c149db9e4c419a075ae702d60f2, type: 3}
+  m_Name: bronze
+  m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Authoring.WheelTierAsset
+  wheel: {fileID: 21300000, guid: 0299418cdb8ff004da2ee76f4f0ad24d, type: 3}
+  indicator: {fileID: 21300000, guid: 5195ea8b4348e004fbf300f9b4203afe, type: 3}
+  pool:
+  - slice: {fileID: 11400000, guid: 6770d568f7b75234494e7f6e4e72c51d, type: 2}
+    weight: 50
+  - slice: {fileID: 11400000, guid: 7023a9639261dd0429d0f670347d3d68, type: 2}
+    weight: 50
+  - slice: {fileID: 11400000, guid: 4c52e108390997f40848a8c094a1c416, type: 2}
+    weight: 50
+  - slice: {fileID: 11400000, guid: 8e97620d40d99e040ba8ce1fbd132e0f, type: 2}
+    weight: 50
+  - slice: {fileID: 11400000, guid: 5b6cca2274c579e459c2efff476d2031, type: 2}
+    weight: 50
+  - slice: {fileID: 11400000, guid: db8a13e0e79564f44984bae2f6860506, type: 2}
+    weight: 50
+  - slice: {fileID: 11400000, guid: d6153df1e64426c4faf0bc8d0eb5f9cf, type: 2}
+    weight: 50
+  - slice: {fileID: 11400000, guid: 118945bf6fb9c3046b92ca07ba85f759, type: 2}
+    weight: 100
+  - slice: {fileID: 11400000, guid: b6e49f6e0a48db14f92f9193f6420f79, type: 2}
+    weight: 50
+  - slice: {fileID: 11400000, guid: e5292cca21c908c46b00366ea5cae8ef, type: 2}
+    weight: 50
+  - slice: {fileID: 11400000, guid: 8f55bd5421a12284197186dc4b9f8255, type: 2}
+    weight: 50
+  - slice: {fileID: 11400000, guid: cc35132f2dc072144ba5d7e669d83427, type: 2}
+    weight: 50
+  - slice: {fileID: 11400000, guid: 0583167f3df75624e87071e3a98ef7d4, type: 2}
+    weight: 50
+  - slice: {fileID: 11400000, guid: 79d89370fb933ff44866d54a6f0f6116, type: 2}
+    weight: 50
+  - slice: {fileID: 11400000, guid: 7023a9639261dd0429d0f670347d3d68, type: 2}
+    weight: 50
+  - slice: {fileID: 11400000, guid: 4c52e108390997f40848a8c094a1c416, type: 2}
+    weight: 50
+  - slice: {fileID: 11400000, guid: db8a13e0e79564f44984bae2f6860506, type: 2}
+    weight: 50
+  - slice: {fileID: 11400000, guid: 5b6cca2274c579e459c2efff476d2031, type: 2}
+    weight: 50
+  title: BRONZE SPIN
+  titleColor: {r: 1, g: 0.6, b: 0.3, a: 1}
+  statusMessage: REACH A SAFE ZONE TO SECURE YOUR REWARDS
