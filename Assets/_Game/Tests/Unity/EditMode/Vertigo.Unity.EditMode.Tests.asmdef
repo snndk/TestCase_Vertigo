@@ -1,0 +1,11 @@
+{
+    "name": "Vertigo.Unity.EditMode.Tests",
+    "rootNamespace": "Vertigo.Tests.Unity",
+    "references": ["Vertigo.Runtime", "Vertigo.Presentation", "Vertigo.Unity", "Unity.ugui", "Unity.TextMeshPro"],
+    "includePlatforms": ["Editor"],
+    "optionalUnityReferences": ["TestAssemblies"],
+    "autoReferenced": false,
+    "overrideReferences": true,
+    "precompiledReferences": ["nunit.framework.dll"],
+    "noEngineReferences": false
+}

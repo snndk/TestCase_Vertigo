@@ -1,0 +1,10 @@
+{
+    "name": "Vertigo.Unity.PlayMode.Tests",
+    "rootNamespace": "Vertigo.Tests.Unity",
+    "references": ["Vertigo.Runtime", "Vertigo.Presentation", "Vertigo.Unity", "Unity.ugui", "Unity.TextMeshPro"],
+    "optionalUnityReferences": ["TestAssemblies"],
+    "autoReferenced": false,
+    "overrideReferences": true,
+    "precompiledReferences": ["nunit.framework.dll", "DOTween.dll"],
+    "noEngineReferences": false
+}

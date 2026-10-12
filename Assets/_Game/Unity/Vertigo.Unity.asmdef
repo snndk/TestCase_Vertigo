@@ -3,10 +3,15 @@
     "rootNamespace": "Vertigo.Unity",
     "references": [
         "Vertigo.Runtime",
-        "Vertigo.Presentation"
+        "Vertigo.Presentation",
+        "Unity.ugui",
+        "Unity.TextMeshPro",
+        "Unity.InputSystem"
     ],
     "autoReferenced": false,
     "overrideReferences": true,
-    "precompiledReferences": [],
+    "precompiledReferences": [
+        "DOTween.dll"
+    ],
     "noEngineReferences": false
 }
