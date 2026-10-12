@@ -6,6 +6,8 @@ namespace Vertigo.Unity._Game.Unity.Views
 {
     public abstract class SliceOutcomeView : MonoBehaviour
     {
+        public virtual bool CanAccelerate => false;
+        public virtual void SetPlaybackSpeed(float speed) { }
         public abstract bool CanPresent(RoundSlice slice);
         public virtual Tween Highlight(WheelSliceView slice)
         {

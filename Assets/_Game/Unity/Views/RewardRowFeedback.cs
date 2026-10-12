@@ -26,6 +26,16 @@ namespace Vertigo.Unity._Game.Unity.Views
         private long m_Target;
         private bool m_HasTotal;
         private Vector2 m_GainOrigin;
+        private float m_PlaybackSpeed = 1f;
+
+        public void SetPlaybackSpeed(float speed)
+        {
+            m_PlaybackSpeed = speed;
+            if (m_IconPulseTween != null && m_IconPulseTween.IsActive())
+                m_IconPulseTween.timeScale = speed;
+            if (m_GainTween != null && m_GainTween.IsActive())
+                m_GainTween.timeScale = speed;
+        }
 
         private void Awake() => m_GainOrigin = gain.rectTransform.anchoredPosition;
 
@@ -64,6 +74,7 @@ namespace Vertigo.Unity._Game.Unity.Views
                     .SetEase(Ease.OutQuad))
                 .Append(icon.DOScale(m_IconRestScale, m_IconPulseReturnDuration).SetEase(Ease.OutBack))
                 .SetUpdate(true);
+            m_IconPulseTween.timeScale = m_PlaybackSpeed;
         }
 
         private void ResetIconPulse()
@@ -77,6 +88,7 @@ namespace Vertigo.Unity._Game.Unity.Views
 
         public void ResetArrival()
         {
+            m_PlaybackSpeed = 1f;
             ResetIconPulse();
             FinishEntrance();
         }
@@ -120,6 +132,7 @@ namespace Vertigo.Unity._Game.Unity.Views
                 gain.alpha = 1f - Mathf.InverseLerp(m_GainFadeStart, 1f, value);
             }, 1f, gainDuration).SetEase(Ease.OutQuad).SetUpdate(true)
                 .OnComplete(() => gain.gameObject.SetActive(false));
+            m_GainTween.timeScale = m_PlaybackSpeed;
         }
 
         public void ResetVisuals()

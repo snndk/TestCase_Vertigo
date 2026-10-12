@@ -61,6 +61,7 @@ namespace Vertigo.Unity._Game.Unity.Views
         }
 
         public void PulseArrival() => feedback.PulseIcon(icon.rectTransform);
+        public void SetPlaybackSpeed(float speed) => feedback.SetPlaybackSpeed(speed);
 
         public void ResetArrival() => feedback.ResetArrival();
 

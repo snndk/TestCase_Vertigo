@@ -8,6 +8,7 @@ namespace Vertigo.Unity._Game.Unity.Views
     {
         private Tween m_Tween;
         private Action<VisualResult> m_Completed;
+        public bool IsPlaying => m_Tween != null;
 
         public void Play(Tween tween, Action<VisualResult> completed)
         {
@@ -29,6 +30,29 @@ namespace Vertigo.Unity._Game.Unity.Views
                 return;
             tween.Kill(false);
             Finish(tween, VisualResult.Cancelled);
+        }
+
+        public void Accelerate(float speed, float normalSpeedTail = 0f)
+        {
+            var tween = m_Tween;
+            if (tween == null)
+                return;
+            var tailStart = tween.Duration(false) - normalSpeedTail;
+            if (tween.Elapsed(false) >= tailStart)
+                return;
+
+            tween.timeScale = speed;
+            if (normalSpeedTail <= 0f)
+                return;
+
+            tween.onUpdate += RestoreTailSpeed;
+            void RestoreTailSpeed()
+            {
+                if (tween.Elapsed(false) < tailStart)
+                    return;
+                tween.timeScale = 1f;
+                tween.onUpdate -= RestoreTailSpeed;
+            }
         }
 
         private void Finish(Tween tween, VisualResult result)

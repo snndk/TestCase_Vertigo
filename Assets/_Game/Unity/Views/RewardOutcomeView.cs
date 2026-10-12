@@ -40,6 +40,13 @@ namespace Vertigo.Unity._Game.Unity.Views
         private Tween m_Animation;
 
         public override bool CanPresent(RoundSlice slice) => slice is RewardSlice;
+        public override bool CanAccelerate => true;
+
+        public override void SetPlaybackSpeed(float speed)
+        {
+            if (m_ArrivalRow != null)
+                m_ArrivalRow.SetPlaybackSpeed(speed);
+        }
 
         public override Tween Highlight(WheelSliceView slice)
         {
