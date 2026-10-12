@@ -25,7 +25,7 @@ namespace Vertigo.Unity._Game.Unity.Views
 
         private void Arrange(bool animate)
         {
-            m_Transition?.Kill(false);
+            StopTransition();
             var visible = cells.Length - 2;
             var middle = visible / 2;
             var first = Mathf.Max(1, m_Zone - middle);
@@ -33,26 +33,46 @@ namespace Vertigo.Unity._Game.Unity.Views
             var shift = animate ? (first - m_FirstZone) * spacing : 0;
             m_FirstZone = first;
             m_Transition = animate ? DOTween.Sequence().SetUpdate(true) : null;
+            ArrangeCells(middle, spacing, shift);
+            ArrangeIndicator(middle, spacing);
+        }
+
+        private void ArrangeCells(int middle, float spacing, float shift)
+        {
             for (var index = 0; index < cells.Length; index++)
             {
                 var cell = cells[index];
-                cell.Show(first + index - 1, m_Zone);
+                cell.Show(m_FirstZone + index - 1, m_Zone);
                 var end = Vector2.up * ((index - 1 - middle) * spacing);
                 cell.Rect.anchoredPosition = end + Vector2.up * shift;
-                if (animate)
-                    m_Transition.Join(DOTween.To(() => cell.Rect.anchoredPosition,
-                        value => cell.Rect.anchoredPosition = value, end, slideDuration).SetEase(Ease.OutQuart));
+                if (m_Transition != null)
+                    m_Transition.Join(CreateSlide(cell.Rect, end));
             }
-            var target = Vector2.up * ((m_Zone - first - middle) * spacing);
-            if (animate)
+        }
+
+        private void ArrangeIndicator(int middle, float spacing)
+        {
+            var target = Vector2.up * ((m_Zone - m_FirstZone - middle) * spacing);
+            if (m_Transition != null)
             {
-                m_Transition.Join(DOTween.To(() => indicator.anchoredPosition,
-                    value => indicator.anchoredPosition = value, target, slideDuration).SetEase(Ease.OutQuart));
-                var currentCell = cells[m_Zone - first + 1];
+                m_Transition.Join(CreateSlide(indicator, target));
+                var currentCell = cells[m_Zone - m_FirstZone + 1];
                 m_Transition.Insert(slideDuration, currentCell.CreateArrival());
             }
             else
                 indicator.anchoredPosition = target;
+        }
+
+        private Tween CreateSlide(RectTransform rect, Vector2 target)
+        {
+            return DOTween.To(() => rect.anchoredPosition,
+                value => rect.anchoredPosition = value, target, slideDuration).SetEase(Ease.OutQuart);
+        }
+
+        private void StopTransition()
+        {
+            m_Transition?.Kill(false);
+            m_Transition = null;
         }
 
         private void OnRectTransformDimensionsChange()
@@ -69,10 +89,10 @@ namespace Vertigo.Unity._Game.Unity.Views
 
         private void OnDisable()
         {
-            m_Transition?.Kill(false);
-            m_Transition = null;
             if (m_Zone > 0)
                 Arrange(false);
+            else
+                StopTransition();
         }
     }
 }
