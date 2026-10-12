@@ -18,19 +18,19 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
     public class GameScreenViewTests : GameViewTestFixture
     {
         [Test]
-        public void DisablingSafeZoneDuringAnimationRestoresTheTargetProgress()
+        public void ZoneBarOccupiesTheRightPanelWithoutTheDuplicateSafeZonePanel()
         {
-            var safe = Root.GetComponentInChildren<SafeZoneView>();
-            safe.Show(ZoneRules.GetSafeZoneProgress(1));
-            safe.Show(ZoneRules.GetSafeZoneProgress(2));
-            safe.gameObject.SetActive(false);
-            safe.gameObject.SetActive(true);
-            safe.Show(ZoneRules.GetSafeZoneProgress(2));
-            var track = Root.GetComponentsInChildren<RectTransform>(true)
-                .Single(item => item.name == "ui_group_safe_zone_bar_track");
-            var fill = Root.GetComponentsInChildren<RectTransform>(true)
-                .Single(item => item.name == "ui_image_safe_zone_bar_track_fill_value");
-            Assert.That(fill.rect.height / track.rect.height, Is.EqualTo(.25f).Within(.001f));
+            var bar = Root.GetComponentInChildren<ZoneProgressView>();
+            var panel = (RectTransform)bar.transform;
+            var viewport = (RectTransform)new SerializedObject(bar).FindProperty("viewport").objectReferenceValue;
+            Assert.That(panel.anchorMin.x, Is.EqualTo(1f));
+            Assert.That(panel.anchorMax.x, Is.EqualTo(1f));
+            Assert.That(viewport.rect.height, Is.GreaterThan(viewport.rect.width));
+            Assert.That(Root.GetComponentsInChildren<Transform>(true)
+                .Any(item => item.name.StartsWith("ui_image_safe_zone") || item.name.StartsWith("ui_group_safe_zone_")), Is.False);
+            var cells = bar.GetComponentsInChildren<ZoneCellView>();
+            Assert.That(cells.All(cell => Mathf.Abs(cell.Rect.anchoredPosition.x) < .001f), Is.True);
+            Assert.That(cells.Select(cell => cell.Rect.anchoredPosition.y).Distinct().Count(), Is.EqualTo(cells.Length));
         }
 
         [Test]
@@ -58,12 +58,12 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             var viewport = (RectTransform)data.FindProperty("viewport").objectReferenceValue;
             var visible = data.FindProperty("cells").arraySize - 2;
             zones.Show(1);
-            var target = indicator.anchoredPosition.x + (viewport.rect.width - 70) / (visible - 1);
+            var target = indicator.anchoredPosition.y + (viewport.rect.height - 46) / (visible - 1);
             zones.Show(2);
             zones.gameObject.SetActive(false);
             zones.gameObject.SetActive(true);
             zones.Show(2);
-            Assert.That(indicator.anchoredPosition.x, Is.EqualTo(target).Within(.001f));
+            Assert.That(indicator.anchoredPosition.y, Is.EqualTo(target).Within(.001f));
         }
 
         [UnityTest]

@@ -9,7 +9,7 @@ namespace Vertigo.Unity._Game.Unity.Views
         [SerializeField] private ZoneCellView[] cells;
         [SerializeField] private RectTransform indicator;
         [SerializeField, Min(0.01f)] private float slideDuration = 0.35f;
-        private const float m_HorizontalPadding = 70f;
+        private const float m_VerticalPadding = 46f;
         private int m_Zone;
         private int m_FirstZone = 1;
         private Sequence m_Transition;
@@ -29,7 +29,7 @@ namespace Vertigo.Unity._Game.Unity.Views
             var visible = cells.Length - 2;
             var middle = visible / 2;
             var first = Mathf.Max(1, m_Zone - middle);
-            var spacing = (viewport.rect.width - m_HorizontalPadding) / (visible - 1);
+            var spacing = (viewport.rect.height - m_VerticalPadding) / (visible - 1);
             var shift = animate ? (first - m_FirstZone) * spacing : 0;
             m_FirstZone = first;
             m_Transition = animate ? DOTween.Sequence().SetUpdate(true) : null;
@@ -37,13 +37,13 @@ namespace Vertigo.Unity._Game.Unity.Views
             {
                 var cell = cells[index];
                 cell.Show(first + index - 1, m_Zone);
-                var end = new Vector2((index - 1 - middle) * spacing, 0);
-                cell.Rect.anchoredPosition = end + new Vector2(shift, 0);
+                var end = Vector2.up * ((index - 1 - middle) * spacing);
+                cell.Rect.anchoredPosition = end + Vector2.up * shift;
                 if (animate)
                     m_Transition.Join(DOTween.To(() => cell.Rect.anchoredPosition,
                         value => cell.Rect.anchoredPosition = value, end, slideDuration).SetEase(Ease.OutQuart));
             }
-            var target = new Vector2((m_Zone - first - middle) * spacing, 0);
+            var target = Vector2.up * ((m_Zone - first - middle) * spacing);
             if (animate)
             {
                 m_Transition.Join(DOTween.To(() => indicator.anchoredPosition,

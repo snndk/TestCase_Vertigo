@@ -22,7 +22,6 @@ namespace Vertigo.Unity._Game.Unity.Views
         [SerializeField] private TMP_Text error;
         [SerializeField] private RewardListView loot;
         [SerializeField] private ZoneProgressView zones;
-        [SerializeField] private SafeZoneView safeZone;
         [SerializeField] private ResultPanelsView panels;
         private WheelConfigurationAsset m_Configuration;
         private RewardAsset m_Currency;
@@ -68,7 +67,6 @@ namespace Vertigo.Unity._Game.Unity.Views
             wallet.text = state.Progress.GetAmount(m_Currency.Id).ToString("N0");
             loot.Show(state.Loot);
             zones.Show(state.Round.Zone);
-            safeZone.Show(state.SafeZone);
             spin.SetInteractable(state.CanSpin);
             cashOut.SetInteractable(state.CanCashOut);
             exitLabel.text = state.CanCashOut ? "COLLECT & EXIT" : "EXIT AT SAFE ZONE";

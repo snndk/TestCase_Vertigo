@@ -93,9 +93,6 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             Presenter.Detach();
             Presenter.Attach();
             Assert.That(Text("safety"), Does.Contain("GOLDEN"));
-            var safeIcons = Root.GetComponentsInChildren<Image>()
-                .Where(icon => icon.name.StartsWith("ui_image_zone_bar_") && icon.name.EndsWith("_safe_zone_icon_value"));
-            Assert.That(safeIcons.Count(icon => icon.enabled), Is.EqualTo(3));
             Assert.That(Button("cashout").interactable, Is.True);
             Random.Index = 3;
             yield return SpinAndWait();

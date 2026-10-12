@@ -13,6 +13,24 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
 {
     public class ZoneProgressAnimationTests : GameViewTestFixture
     {
+        [Test]
+        public void CellLayoutScaleStaysNeutralAtStartupAndAfterArrival()
+        {
+            var bar = Root.GetComponentInChildren<ZoneProgressView>();
+            foreach (var cell in bar.GetComponentsInChildren<ZoneCellView>(true))
+                Assert.That(cell.Rect.localScale, Is.EqualTo(Vector3.one), cell.name);
+
+            bar.Show(2);
+            GetTransition(bar).Complete(true);
+            foreach (var cell in bar.GetComponentsInChildren<ZoneCellView>(true))
+            {
+                Assert.That(cell.Rect.localScale, Is.EqualTo(Vector3.one), cell.name);
+                var data = new SerializedObject(cell.GetComponent<ZoneCellFeedback>());
+                var motion = (RectTransform)data.FindProperty("motion").objectReferenceValue;
+                Assert.That(motion.localScale, Is.EqualTo(Vector3.one), cell.name);
+            }
+        }
+
         [TestCase(2, false)]
         [TestCase(5, true)]
         [TestCase(30, true)]
@@ -34,7 +52,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             Assert.That(motion.localScale, Is.EqualTo(Vector3.one));
             Assert.That(glow.gameObject.activeSelf, Is.False);
             if (zone > 5)
-                Assert.That(halfwayPosition.x, Is.LessThan(startPosition.x));
+                Assert.That(halfwayPosition.y, Is.LessThan(startPosition.y));
             DOTween.ManualUpdate(.225f, .225f);
             Assert.That(motion.localScale.x, Is.GreaterThan(1f));
             Assert.That(glow.gameObject.activeSelf, Is.EqualTo(illuminates));
