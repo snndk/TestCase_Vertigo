@@ -17,6 +17,7 @@ namespace Vertigo.Unity._Game.Unity.Views
         [SerializeField] private WheelSliceView[] slices;
         [SerializeField] private SliceOutcomeView[] outcomes;
         [SerializeField] private WheelPointerView pointer;
+        [SerializeField] private WheelTierTransition tierTransition;
         [SerializeField, Min(0.01f)] private float spinDuration = 4;
         [SerializeField, Min(1)] private int revolutions = 5;
         private readonly TweenOperation m_Operation = new TweenOperation();
@@ -38,6 +39,18 @@ namespace Vertigo.Unity._Game.Unity.Views
                 return;
             if (round.Slices.Count != SliceCount)
                 throw new InvalidOperationException("Wheel capacity does not match the round.");
+            tierTransition.Finish();
+            var animate = m_Round != null && m_Round.Tier != round.Tier && round.Zone > 1 &&
+                isActiveAndEnabled && tierTransition.isActiveAndEnabled;
+            m_Round = round;
+            if (animate)
+                tierTransition.Play(m_Configuration.GetTier(round.Tier), () => ApplyRound(round));
+            else
+                ApplyRound(round);
+        }
+
+        private void ApplyRound(Round round)
+        {
             var tier = m_Configuration.GetTier(round.Tier);
             wheel.sprite = tier.Wheel;
             indicator.sprite = tier.Indicator;
@@ -47,11 +60,11 @@ namespace Vertigo.Unity._Game.Unity.Views
                 slices[index].Bind(round.Slices[index], tier.GetSlice(round.SourceIndices[index]));
                 slices[index].KeepUpright(0);
             }
-            m_Round = round;
         }
 
         public void Spin(SpinResult result, Action<VisualResult> completed)
         {
+            tierTransition.Finish();
             var angle = motion.localEulerAngles.z;
             var targetAngle = result.WinningIndex * 360f / SliceCount;
             var target = angle - revolutions * 360f - Mathf.Repeat(angle - targetAngle, 360f);
@@ -97,6 +110,7 @@ namespace Vertigo.Unity._Game.Unity.Views
 
         public void Cancel()
         {
+            tierTransition.Finish();
             m_Operation.Cancel();
             pointer.ResetMotion();
             foreach (var slice in slices)

@@ -10,12 +10,18 @@ namespace Vertigo.Unity._Game.Unity.Authoring
         [SerializeField] private string title;
         [SerializeField] private Color titleColor = Color.white;
         [SerializeField, TextArea] private string statusMessage;
+        [SerializeField] private Color transitionColor = Color.white;
+        [SerializeField, Range(0f, 1f)] private float transitionGlowStrength = 0.3f;
+        [SerializeField, Range(0, 8)] private int transitionSparkles;
         [SerializeField] private Sprite wheel;
         [SerializeField] private Sprite indicator;
         [SerializeField] private WheelPoolEntry[] pool = Array.Empty<WheelPoolEntry>();
         public string Title => title;
         public Color TitleColor => titleColor;
         public string StatusMessage => statusMessage;
+        public Color TransitionColor => transitionColor;
+        public float TransitionGlowStrength => transitionGlowStrength;
+        public int TransitionSparkles => transitionSparkles;
         public Sprite Wheel => wheel;
         public Sprite Indicator => indicator;
         public int CandidateCount => pool.Length;

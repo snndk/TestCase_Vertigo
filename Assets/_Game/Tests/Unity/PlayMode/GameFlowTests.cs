@@ -66,6 +66,91 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             m_ConfigurationAssets.Clear();
         }
 
+        [TestCase(5, 4)]
+        [TestCase(30, 7)]
+        [TestCase(6, 0)]
+        public void TierTransitionSwapsAtTheSmallestScaleAndRestoresTheWheel(int zone, int sparkleCount)
+        {
+            var configuration = CreateFixedConfiguration();
+            var generator = new Vertigo.Runtime._Game.Runtime.Rounds.RoundGenerator(configuration.CreateRuntime(), m_Random);
+            var wheel = m_View.Wheel;
+            var transition = wheel.GetComponent<WheelTierTransition>();
+            if (zone == 6)
+            {
+                wheel.Bind(generator.Generate(5));
+                transition.Finish();
+            }
+            var motion = wheel.GetComponentsInChildren<RectTransform>()
+                .Single(item => item.name == "ui_group_wheel_motion");
+            var image = wheel.GetComponentsInChildren<Image>()
+                .Single(item => item.name == "ui_image_wheel_base_value");
+            var originalSprite = image.sprite;
+            var originalScale = motion.localScale;
+            var round = generator.Generate(zone);
+            wheel.Bind(round);
+            Assert.That(transition.IsPlaying, Is.True);
+            var sequence = GetTierTransitionSequence(transition);
+            wheel.Bind(round);
+            Assert.That(GetTierTransitionSequence(transition), Is.SameAs(sequence));
+            sequence.SetUpdate(UpdateType.Manual);
+            DOTween.ManualUpdate(0.07f, 0.07f);
+            Assert.That(image.sprite, Is.SameAs(originalSprite));
+            Assert.That(motion.localScale.x, Is.LessThan(originalScale.x));
+            DOTween.ManualUpdate(0.08f, 0.08f);
+            Assert.That(image.sprite, Is.SameAs(configuration.GetTier(round.Tier).Wheel));
+            Assert.That(transition.GetComponentsInChildren<Image>()
+                .Count(item => item.name.StartsWith("ui_image_wheel_tier_sparkle_")), Is.EqualTo(sparkleCount));
+            sequence.Complete(true);
+            Assert.That(transition.IsPlaying, Is.False);
+            Assert.That(motion.localScale, Is.EqualTo(originalScale));
+        }
+
+        [Test]
+        public void TierTransitionSkipsSameTierAndSettlesLatestRoundWhenDisabled()
+        {
+            var configuration = CreateFixedConfiguration();
+            var generator = new Vertigo.Runtime._Game.Runtime.Rounds.RoundGenerator(configuration.CreateRuntime(), m_Random);
+            var wheel = m_View.Wheel;
+            var transition = wheel.GetComponent<WheelTierTransition>();
+            wheel.Bind(generator.Generate(2));
+            Assert.That(transition.IsPlaying, Is.False);
+            wheel.Bind(generator.Generate(5));
+            wheel.Bind(generator.Generate(30));
+            transition.enabled = false;
+            var image = wheel.GetComponentsInChildren<Image>().Single(item => item.name == "ui_image_wheel_base_value");
+            Assert.That(image.sprite, Is.SameAs(configuration.GetTier(WheelTier.Gold).Wheel));
+            Assert.That(transition.IsPlaying, Is.False);
+            Assert.That(wheel.GetComponentsInChildren<RectTransform>()
+                .Single(item => item.name == "ui_group_wheel_motion").localScale, Is.EqualTo(Vector3.one));
+        }
+
+        [Test]
+        public void StartingSpinDuringTierTransitionSettlesTheNewWheelFirst()
+        {
+            for (var index = 0; index < 4; index++)
+            {
+                var result = m_Session.RequestSpin().Result;
+                m_Session.CompleteResolution(result.OperationId);
+            }
+            var round = m_Session.GetSnapshot().Round;
+            m_View.Wheel.Bind(round);
+            var transition = m_View.Wheel.GetComponent<WheelTierTransition>();
+            Assert.That(transition.IsPlaying, Is.True);
+            var spin = m_Session.RequestSpin().Result;
+            m_View.Wheel.Spin(spin, result => { });
+            Assert.That(transition.IsPlaying, Is.False);
+            var slices = m_Root.GetComponentsInChildren<WheelSliceView>();
+            for (var index = 0; index < slices.Length; index++)
+                Assert.That(slices[index].Slice, Is.SameAs(round.Slices[index]));
+            m_View.Wheel.Cancel();
+        }
+
+        private static Sequence GetTierTransitionSequence(WheelTierTransition transition)
+        {
+            return (Sequence)typeof(WheelTierTransition).GetField("m_Sequence",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(transition);
+        }
+
         [UnityTest]
         public IEnumerator RewardRowCountsOnlyNewArrivalsAndSettlesWhenDisabled()
         {
@@ -665,6 +750,10 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
                 yield return null;
             }
             Assert.That(m_Session.GetSnapshot().Status, Is.Not.EqualTo(SessionStatus.Resolving));
+            var transition = m_View.Wheel.GetComponent<WheelTierTransition>();
+            while (transition.IsPlaying && Time.realtimeSinceStartup < deadline)
+                yield return null;
+            Assert.That(transition.IsPlaying, Is.False);
             Assert.That(Text("error"), Is.Empty);
         }
 

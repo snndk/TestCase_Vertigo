@@ -12,6 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4474c149db9e4c419a075ae702d60f2, type: 3}
   m_Name: gold
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Authoring.WheelTierAsset
+  title: GOLDEN SPIN
+  titleColor: {r: 1, g: 0.78, b: 0.25, a: 1}
+  statusMessage: RISK-FREE SPIN - NO BOMB
+  transitionColor: {r: 1, g: 0.78, b: 0.25, a: 1}
+  transitionGlowStrength: 0.75
+  transitionSparkles: 7
   wheel: {fileID: 21300000, guid: 516b845cec04f814893a071381f26cdd, type: 3}
   indicator: {fileID: 21300000, guid: 5693d71100808b74f84ae49af6c2ee9b, type: 3}
   pool:
@@ -31,6 +37,3 @@ MonoBehaviour:
     weight: 100
   - slice: {fileID: 11400000, guid: d3be2080f80c25041a533ba0bcd2dd87, type: 2}
     weight: 100
-  title: GOLDEN SPIN
-  titleColor: {r: 1, g: 0.78, b: 0.25, a: 1}
-  statusMessage: RISK-FREE SPIN - NO BOMB
