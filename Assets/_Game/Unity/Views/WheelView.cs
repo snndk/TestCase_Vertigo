@@ -73,29 +73,26 @@ namespace Vertigo.Unity._Game.Unity.Views
 
         public void Highlight(SpinResult result, Action<VisualResult> completed)
         {
-            var target = slices[result.WinningIndex].Motion;
-            var tween = DOTween.Sequence()
-                .Append(DOTween.To(() => target.localScale, value => target.localScale = value,
-                    Vector3.one * 1.15f, 0.12f))
-                .Append(DOTween.To(() => target.localScale, value => target.localScale = value,
-                    Vector3.one, 0.12f));
-            m_Operation.Play(tween, completed);
+            var outcome = FindOutcome(result.WinningSlice);
+            m_Operation.Play(outcome.Highlight(slices[result.WinningIndex]), completed);
         }
 
         public void PlayOutcome(SpinResult result, Action<VisualResult> completed)
         {
-            foreach (var outcome in outcomes)
+            var outcome = FindOutcome(result.WinningSlice);
+            m_Operation.Play(outcome.Play(slices[result.WinningIndex]), status =>
             {
-                if (!outcome.CanPresent(result.WinningSlice))
-                    continue;
-                m_Operation.Play(outcome.Play(slices[result.WinningIndex]), status =>
-                {
-                    outcome.ResetVisuals();
-                    completed(status);
-                });
-                return;
-            }
-            completed(VisualResult.Failed(new InvalidOperationException("No view can present this slice.")));
+                outcome.ResetVisuals();
+                completed(status);
+            });
+        }
+
+        private SliceOutcomeView FindOutcome(RoundSlice slice)
+        {
+            foreach (var outcome in outcomes)
+                if (outcome.CanPresent(slice))
+                    return outcome;
+            throw new InvalidOperationException("No view can present this slice.");
         }
 
         public void Cancel()
