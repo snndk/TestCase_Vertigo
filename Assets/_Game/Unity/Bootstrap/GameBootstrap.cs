@@ -14,21 +14,24 @@ namespace Vertigo.Unity._Game.Unity.Bootstrap
     {
         [SerializeField] private GameSettings settings;
         [SerializeField] private GameScreenView screen;
+        [SerializeField] private TapToStartView startScreen;
         [SerializeField, Min(1)] private float presentationTimeout = 10;
         private GameScreenPresenter m_Presenter;
+        private bool m_HasStarted;
 
         private void Awake()
         {
             try
             {
-                if (settings == null || screen == null)
-                    throw new InvalidOperationException("Game settings and screen must be assigned.");
+                if (settings == null || screen == null || startScreen == null)
+                    throw new InvalidOperationException("Game settings, game screen and start screen must be assigned.");
                 var progress = settings.CreateStartingRewards();
                 var session = new GameSession(settings.WheelConfiguration.CreateRuntime(), new SystemRandomSource(),
                     new InMemoryProgressStore(progress), settings.CreateReviveCost(), settings.ReviveIncreasePercent);
                 screen.Initialize(settings.WheelConfiguration, settings.Currency);
                 m_Presenter = new GameScreenPresenter(session, screen, screen.Input,
                     new SpinPresentationSequence(screen.Wheel, TimeSpan.FromSeconds(presentationTimeout)));
+                startScreen.Show();
             }
             catch (Exception error)
             {
@@ -38,8 +41,34 @@ namespace Vertigo.Unity._Game.Unity.Bootstrap
                 enabled = false;
             }
         }
-        private void OnEnable() => m_Presenter?.Attach();
-        private void OnDisable() => m_Presenter?.Detach();
-        private void Update() => m_Presenter?.AdvancePresentation(TimeSpan.FromSeconds(Time.unscaledDeltaTime));
+        private void OnEnable()
+        {
+            startScreen.StartRequested += StartGame;
+            if (m_HasStarted)
+                m_Presenter?.Attach();
+        }
+
+        private void StartGame()
+        {
+            if (m_HasStarted)
+                return;
+
+            m_Presenter.Attach();
+            m_HasStarted = true;
+            startScreen.Dismiss();
+        }
+
+        private void OnDisable()
+        {
+            if (startScreen != null)
+                startScreen.StartRequested -= StartGame;
+            m_Presenter?.Detach();
+        }
+
+        private void Update()
+        {
+            if (m_HasStarted)
+                m_Presenter?.AdvancePresentation(TimeSpan.FromSeconds(Time.unscaledDeltaTime));
+        }
     }
 }

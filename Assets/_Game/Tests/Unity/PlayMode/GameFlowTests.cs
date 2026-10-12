@@ -185,6 +185,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
                 data.FindProperty("settings").objectReferenceValue = settings;
                 data.ApplyModifiedPropertiesWithoutUndo();
                 parent.SetActive(true);
+                instance.GetComponentInChildren<TapToStartView>().GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
                 var wallet = instance.GetComponentsInChildren<TMP_Text>(true).Single(item => item.name == "ui_text_wallet_amount_value");
                 Assert.That(wallet.text, Is.EqualTo("420"));
                 var icon = instance.GetComponentsInChildren<Image>(true).Single(item => item.name == "ui_image_wallet_icon_value");
