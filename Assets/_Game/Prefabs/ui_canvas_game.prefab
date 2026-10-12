@@ -1446,6 +1446,70 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &963845541043319413
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6296350949458565025}
+  - component: {fileID: 3812191193645886402}
+  m_Layer: 0
+  m_Name: ui_group_bomb_actions
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6296350949458565025
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963845541043319413}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7631351042414420449}
+  - {fileID: 2050555067126902907}
+  m_Father: {fileID: 8850459786307297234}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 112}
+  m_SizeDelta: {x: 638.8, y: 80}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &3812191193645886402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963845541043319413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.HorizontalLayoutGroup
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 4
+  m_Spacing: 38.8
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &1107354680888280123
 GameObject:
   m_ObjectHideFlags: 0
@@ -2288,7 +2352,7 @@ RectTransform:
   - {fileID: 69753012213381234}
   - {fileID: 3274598632388090353}
   - {fileID: 4789552911765951768}
-  - {fileID: 2017013798933437708}
+  - {fileID: 2539106750782326122}
   - {fileID: 5797524722881509991}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2373,6 +2437,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Views.GameScreenView
   wheel: {fileID: 8546253114794874879}
+  input: {fileID: 812341990123450001}
   exitLabel: {fileID: 5486888726267078628}
   wheelTitle: {fileID: 1489350677492629628}
   wallet: {fileID: 1507067518732024619}
@@ -2383,7 +2448,6 @@ MonoBehaviour:
   loot: {fileID: 3168929112265288676}
   zones: {fileID: 1936340784235621444}
   panels: {fileID: 211817585716992398}
-  input: {fileID: 812341990123450001}
 --- !u!114 &6727050888538020064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2396,9 +2460,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ac37d10d6f73144c9d0a699171dc14e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Bootstrap.GameBootstrap
+  settings: {fileID: 11400000, guid: b6271fff7e3a4f12b46ce4f253d28375, type: 2}
   screen: {fileID: 2377958637002528218}
   presentationTimeout: 10
-  settings: {fileID: 11400000, guid: b6271fff7e3a4f12b46ce4f253d28375, type: 2}
+--- !u!114 &812341990123450001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405305433897406804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19f7f390c56d421d86c562b603cf085e, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Input.GameInputController
+  spin: {fileID: 5554799828578950878}
+  cashOut: {fileID: 4055638136571675514}
+  revive: {fileID: 4516441992317986131}
+  giveUp: {fileID: 7372159644470606009}
+  restart: {fileID: 354993500729712337}
+  tap: {fileID: 2579180274636254361}
+  wheel: {fileID: 8546253114794874879}
 --- !u!1 &1450785040106149303
 GameObject:
   m_ObjectHideFlags: 0
@@ -6168,6 +6251,56 @@ MonoBehaviour:
   riseDuration: 0.09
   settleDuration: 0.2
   glowStrength: 0.65
+--- !u!1 &4303744009551366648
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2539106750782326122}
+  - component: {fileID: 7143338825362993349}
+  m_Layer: 0
+  m_Name: ui_group_error_safe_area
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2539106750782326122
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4303744009551366648}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2017013798933437708}
+  m_Father: {fileID: 2972040979385254212}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &7143338825362993349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4303744009551366648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3decd19d68f54e44ba185a3c4f585baf, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Views.SafeAreaView
+  target: {fileID: 2539106750782326122}
 --- !u!1 &4333436080140878411
 GameObject:
   m_ObjectHideFlags: 0
@@ -7407,9 +7540,8 @@ RectTransform:
   - {fileID: 4875271758759238043}
   - {fileID: 3025493160026918953}
   - {fileID: 4889386240845533197}
-  - {fileID: 2050555067126902907}
-  - {fileID: 7631351042414420449}
   - {fileID: 904396257987098449}
+  - {fileID: 6296350949458565025}
   m_Father: {fileID: 1927673007778582261}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -8189,6 +8321,7 @@ GameObject:
   - component: {fileID: 7116126346649788069}
   - component: {fileID: 1541175250389672498}
   - component: {fileID: 7372159644470606009}
+  - component: {fileID: 509837715179603759}
   m_Layer: 0
   m_Name: ui_button_bomb_give_up_value
   m_TagString: Untagged
@@ -8209,7 +8342,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8171483181656782861}
-  m_Father: {fileID: 8850459786307297234}
+  m_Father: {fileID: 6296350949458565025}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.28, y: 0}
   m_AnchorMax: {x: 0.28, y: 0}
@@ -8311,6 +8444,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Views.GameButton
   button: {fileID: 1541175250389672498}
+--- !u!114 &509837715179603759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5438267004416138184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: 300
+  m_PreferredHeight: 80
+  m_FlexibleWidth: 0
+  m_FlexibleHeight: 0
+  m_LayoutPriority: 1
 --- !u!1 &5447616390472396859
 GameObject:
   m_ObjectHideFlags: 0
@@ -10371,12 +10524,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2972040979385254212}
+  m_Father: {fileID: 2539106750782326122}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 14}
-  m_SizeDelta: {x: 0, y: 30}
+  m_SizeDelta: {x: -40, y: 30}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &694148170659531654
 CanvasRenderer:
@@ -10618,6 +10771,7 @@ GameObject:
   - component: {fileID: 4304202361870375962}
   - component: {fileID: 4428911028066627696}
   - component: {fileID: 4516441992317986131}
+  - component: {fileID: 7670341296673934578}
   m_Layer: 0
   m_Name: ui_button_bomb_revive_value
   m_TagString: Untagged
@@ -10638,7 +10792,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6907100150926605224}
-  m_Father: {fileID: 8850459786307297234}
+  m_Father: {fileID: 6296350949458565025}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.72, y: 0}
   m_AnchorMax: {x: 0.72, y: 0}
@@ -10740,6 +10894,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Views.GameButton
   button: {fileID: 4428911028066627696}
+--- !u!114 &7670341296673934578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6679371628276798979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: 300
+  m_PreferredHeight: 80
+  m_FlexibleWidth: 0
+  m_FlexibleHeight: 0
+  m_LayoutPriority: 1
 --- !u!1 &6713458326572419184
 GameObject:
   m_ObjectHideFlags: 0
@@ -14191,22 +14365,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e6df9793c2bdb44bba6dc3c316a3e13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Views.AnimationTapView
---- !u!114 &812341990123450001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1405305433897406804}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19f7f390c56d421d86c562b603cf085e, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Input.GameInputController
-  spin: {fileID: 5554799828578950878}
-  cashOut: {fileID: 4055638136571675514}
-  wheel: {fileID: 8546253114794874879}
-  revive: {fileID: 4516441992317986131}
-  giveUp: {fileID: 7372159644470606009}
-  restart: {fileID: 354993500729712337}
-  tap: {fileID: 2579180274636254361}
