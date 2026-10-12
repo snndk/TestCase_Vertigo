@@ -1,0 +1,7 @@
+{
+    "name": "DOTween.Modules",
+    "autoReferenced": true,
+    "overrideReferences": true,
+    "precompiledReferences": ["DOTween.dll"],
+    "noEngineReferences": false
+}
