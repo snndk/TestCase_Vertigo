@@ -16,11 +16,16 @@ namespace Vertigo.Unity._Game.Unity.Authoring
 
         public WheelConfiguration CreateRuntime()
         {
-            GetRewards();
+            ValidateAndCollectRewards();
             return new WheelConfiguration(sliceCount, bronze.CreateCandidates(), silver.CreateCandidates(), gold.CreateCandidates());
         }
 
         public IReadOnlyList<RewardAsset> GetRewards()
+        {
+            return new List<RewardAsset>(ValidateAndCollectRewards().Values).AsReadOnly();
+        }
+
+        private Dictionary<string, RewardAsset> ValidateAndCollectRewards()
         {
             if (bronze == null || silver == null || gold == null)
                 throw new InvalidOperationException("Every wheel tier must be assigned.");
@@ -35,16 +40,19 @@ namespace Vertigo.Unity._Game.Unity.Authoring
                     if (slice == null)
                         throw new InvalidOperationException(tier + " has a missing slice at " + index + ".");
                     foreach (var reward in slice.GetRewards())
-                    {
-                        if (reward == null || string.IsNullOrWhiteSpace(reward.Id))
-                            throw new InvalidOperationException(tier + " has a missing reward or reward identity.");
-                        if (rewards.TryGetValue(reward.Id, out var existing) && existing != reward)
-                            throw new InvalidOperationException("Reward '" + reward.Id + "' must use the same RewardAsset in every tier.");
-                        rewards[reward.Id] = reward;
-                    }
+                        RegisterReward(rewards, reward, tier);
                 }
             }
-            return new List<RewardAsset>(rewards.Values).AsReadOnly();
+            return rewards;
+        }
+
+        private static void RegisterReward(Dictionary<string, RewardAsset> rewards, RewardAsset reward, WheelTier tier)
+        {
+            if (reward == null || string.IsNullOrWhiteSpace(reward.Id))
+                throw new InvalidOperationException(tier + " has a missing reward or reward identity.");
+            if (rewards.TryGetValue(reward.Id, out var existing) && existing != reward)
+                throw new InvalidOperationException("Reward '" + reward.Id + "' must use the same RewardAsset in every tier.");
+            rewards[reward.Id] = reward;
         }
 
         public WheelTierAsset GetTier(WheelTier tier)

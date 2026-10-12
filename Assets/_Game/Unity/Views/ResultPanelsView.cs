@@ -39,17 +39,28 @@ namespace Vertigo.Unity._Game.Unity.Views
 
         public void Show(GameScreenState state)
         {
+            ShowBomb(state);
+            ShowCashOut(state);
+        }
+
+        private void ShowBomb(GameScreenState state)
+        {
             m_AwaitingRevive = state.AwaitingRevive;
             ShowPanel(bombPanel, bombMotion, state.ShowBomb, ref m_BombTween);
-            ShowPanel(cashOutPanel, cashOutMotion, state.CashOut != null, ref m_CashOutTween);
             revive.gameObject.SetActive(state.AwaitingRevive);
             revive.SetInteractable(state.CanRevive);
-            reviveLabel.text = state.ReviveCost == null ? "REVIVE" : "REVIVE " + state.ReviveCost.Amount.ToString("N0") + " " + GetCurrencyName(state.ReviveCost.RewardId);
+            reviveLabel.text = state.ReviveCost == null ? "REVIVE" :
+                "REVIVE " + state.ReviveCost.Amount.ToString("N0") + " " + GetCurrencyName(state.ReviveCost.RewardId);
             giveUpLabel.text = state.AwaitingRevive ? "GIVE UP" : "RESTART";
             giveUp.SetInteractable(state.ShowBomb);
             bombBody.text = state.AwaitingRevive ?
                 "Revive to keep your rewards and continue.\nGive up to start a new run." :
                 "Your run rewards were lost.\nStart a new run and try again!";
+        }
+
+        private void ShowCashOut(GameScreenState state)
+        {
+            ShowPanel(cashOutPanel, cashOutMotion, state.CashOut != null, ref m_CashOutTween);
             restart.SetInteractable(state.CanRestart);
             if (state.CashOut != null)
             {
