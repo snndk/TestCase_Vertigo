@@ -20,12 +20,12 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
 
         public PresentationTestContext()
         {
-            var coins = new RewardSliceDefinition("coins", new RewardDefinition("coins", 10, 1));
-            var tickets = new RewardSliceDefinition("tickets", new RewardDefinition("tickets", 2, 1));
+            var coins = new RewardSliceDefinition("coins", new RewardDefinition("coins", 1), 10);
+            var tickets = new RewardSliceDefinition("tickets", new RewardDefinition("tickets", 1), 2);
             var configuration = new WheelConfiguration(
                 new SliceDefinition[] { coins, tickets, new BombSliceDefinition("bomb") },
-                new[] { coins, tickets, new RewardSliceDefinition("gems", new RewardDefinition("gems", 1, 1)) },
-                new[] { coins, tickets, new RewardSliceDefinition("special", new RewardDefinition("special", 1, 1), true) });
+                new[] { coins, tickets, new RewardSliceDefinition("gems", new RewardDefinition("gems", 1), 1) },
+                new[] { coins, tickets, new RewardSliceDefinition("special", new RewardDefinition("special", 1), 1, true) });
 
             Session = new GameSession(configuration, Random, Store);
             Sequence = new SpinPresentationSequence(SpinView, TimeSpan.FromSeconds(10));

@@ -16,7 +16,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
         public void GeneratedBombCannotBypassDefinitionValidation(int zone)
         {
             var configuration = WithExtraSlice(ZoneRules.GetTier(zone), new UnexpectedBombDefinition("extra"));
-            var generator = new RoundGenerator(configuration);
+            var generator = new RoundGenerator(configuration, new SequenceRandom());
 
             Assert.Throws<InvalidOperationException>(() => generator.Generate(zone));
         }
@@ -25,7 +25,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
         public void GeneratedSliceMustRetainItsConfiguredId()
         {
             var configuration = WithExtraSlice(WheelTier.Silver, new UnexpectedBombDefinition("extra", "different"));
-            Assert.Throws<InvalidOperationException>(() => new RoundGenerator(configuration).Generate(5));
+            Assert.Throws<InvalidOperationException>(() => new RoundGenerator(configuration, new SequenceRandom()).Generate(5));
         }
 
         [TestCase(4, 5)]
@@ -34,7 +34,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
         [TestCase(30, 31)]
         public void SharedRewardGrowsAcrossTierTransitions(int fromZone, int toZone)
         {
-            var generator = new RoundGenerator(TestWheelFactory.Create());
+            var generator = new RoundGenerator(TestWheelFactory.Create(), new SequenceRandom());
             var before = generator.Generate(fromZone).Slices.OfType<RewardSlice>()
                 .Single(slice => slice.Reward.RewardId == "gold").Reward;
             var after = generator.Generate(toZone).Slices.OfType<RewardSlice>()
@@ -44,13 +44,12 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             Assert.That(after.Amount, Is.EqualTo(before.Amount + 1));
         }
 
-        [TestCase(20, 1)]
         [TestCase(10, 2)]
         public void SameRewardCannotHaveDifferentTierGrowth(long amount, long increase)
         {
             var configuration = TestWheelFactory.Create();
             var silver = configuration.GetSlices(WheelTier.Silver).ToArray();
-            silver[0] = new RewardSliceDefinition("gold", new RewardDefinition("gold", amount, increase));
+            silver[0] = new RewardSliceDefinition("gold", new RewardDefinition("gold", increase), amount);
 
             Assert.Throws<ArgumentException>(() => new WheelConfiguration(
                 configuration.GetSlices(WheelTier.Bronze), silver, configuration.GetSlices(WheelTier.Gold)));
@@ -68,7 +67,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
         [TestCase(1000, WheelTier.Silver)]
         public void TierDeterminesActualBombContents(int zone, WheelTier expected)
         {
-            var round = new RoundGenerator(TestWheelFactory.Create()).Generate(zone);
+            var round = new RoundGenerator(TestWheelFactory.Create(), new SequenceRandom()).Generate(zone);
             Assert.That(round.Tier, Is.EqualTo(expected));
             Assert.That(round.Slices.OfType<BombSlice>().Count(), Is.EqualTo(expected == WheelTier.Bronze ? 1 : 0));
             Assert.That(round.Slices.OfType<RewardSlice>().Any(s => s.IsSpecial), Is.EqualTo(expected == WheelTier.Gold));
@@ -77,7 +76,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
         [Test]
         public void RewardsGrowForEachTier()
         {
-            var generator = new RoundGenerator(TestWheelFactory.Create());
+            var generator = new RoundGenerator(TestWheelFactory.Create(), new SequenceRandom());
             foreach (var zones in new[] { new[] { 1, 2 }, new[] { 5, 10 }, new[] { 30, 60 } })
             {
                 var first = generator.Generate(zones[0]);
@@ -101,7 +100,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
         [TestCase(-1)]
         public void NonGrowingRewardsAreRejected(long increase)
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => new RewardSliceDefinition("a", new RewardDefinition("gold", 1, increase)));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new RewardSliceDefinition("a", new RewardDefinition("gold", increase), 1));
         }
 
         [Test]
@@ -115,7 +114,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
 
             var slices = (IList<SliceDefinition>)config.GetSlices(WheelTier.Bronze);
             Assert.Throws<NotSupportedException>(() => slices[0] = bronze[0]);
-            var round = new RoundGenerator(config).Generate(1);
+            var round = new RoundGenerator(config, new SequenceRandom()).Generate(1);
             Assert.Throws<NotSupportedException>(() => ((IList<RoundSlice>)round.Slices).Clear());
 
             var rewards = new[] { new Reward("gold", 5) };
@@ -135,7 +134,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             var changed = valid.GetSlices(tier).ToArray();
             for (var i = 0; i < changed.Length; i++)
                 changed[i] = i < bombCount ? new BombSliceDefinition("bomb" + i) :
-                    new RewardSliceDefinition("reward" + i, new RewardDefinition("exclusive" + i, 1, 1), tier == WheelTier.Gold);
+                    new RewardSliceDefinition("reward" + i, new RewardDefinition("exclusive" + i, 1), 1, tier == WheelTier.Gold);
 
             Assert.Throws<ArgumentException>(() => new WheelConfiguration(
                 tier == WheelTier.Bronze ? changed : valid.GetSlices(WheelTier.Bronze),
@@ -151,23 +150,18 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
                 valid.GetSlices(WheelTier.Silver), valid.GetSlices(WheelTier.Silver)));
 
             var gold = valid.GetSlices(WheelTier.Gold).ToArray();
-            gold[2] = new RewardSliceDefinition("special", new RewardDefinition("gold", 10, 1), true);
+            gold[2] = new RewardSliceDefinition("special", new RewardDefinition("gold", 1), 10, true);
             Assert.Throws<ArgumentException>(() => new WheelConfiguration(valid.GetSlices(WheelTier.Bronze),
                 valid.GetSlices(WheelTier.Silver), gold));
         }
 
         [Test]
-        public void DuplicateIdsAndMismatchedCapacityAreRejected()
+        public void MismatchedCapacityIsRejected()
         {
             var valid = TestWheelFactory.Create();
-            var silver = valid.GetSlices(WheelTier.Silver).ToArray();
-            silver[1] = silver[0];
-            Assert.Throws<ArgumentException>(() => new WheelConfiguration(valid.GetSlices(WheelTier.Bronze),
-                silver, valid.GetSlices(WheelTier.Gold)));
-
             var larger = valid.GetSlices(WheelTier.Silver).Concat(new[]
             {
-                new RewardSliceDefinition("extra", new RewardDefinition("gold", 10, 1))
+                new RewardSliceDefinition("extra", new RewardDefinition("gold", 1), 10)
             });
             Assert.Throws<ArgumentException>(() => new WheelConfiguration(valid.GetSlices(WheelTier.Bronze),
                 larger, valid.GetSlices(WheelTier.Gold)));
@@ -176,7 +170,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
         private static WheelConfiguration WithExtraSlice(WheelTier target, SliceDefinition extra)
         {
             var standard = TestWheelFactory.Create();
-            var ordinary = new RewardSliceDefinition("extra", new RewardDefinition("gold", 10, 1));
+            var ordinary = new RewardSliceDefinition("extra", new RewardDefinition("gold", 1), 10);
             return new WheelConfiguration(
                 standard.GetSlices(WheelTier.Bronze).Concat(new[] { target == WheelTier.Bronze ? extra : ordinary }),
                 standard.GetSlices(WheelTier.Silver).Concat(new[] { target == WheelTier.Silver ? extra : ordinary }),

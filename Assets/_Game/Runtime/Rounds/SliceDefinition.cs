@@ -4,6 +4,7 @@ namespace Vertigo.Runtime._Game.Runtime.Rounds
 {
     public abstract class SliceDefinition
     {
+        // Identifies reusable content. A position in a round is identified by its index.
         public string Id { get; }
 
         protected SliceDefinition(string id)

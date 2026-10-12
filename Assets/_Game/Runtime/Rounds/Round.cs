@@ -10,8 +10,11 @@ namespace Vertigo.Runtime._Game.Runtime.Rounds
         public WheelTier Tier { get; }
         public IReadOnlyList<RoundSlice> Slices { get; }
 
-        internal Round(int zone, WheelTier tier, IList<RoundSlice> slices)
+        public IReadOnlyList<int> SourceIndices { get; }
+
+        internal Round(int zone, WheelTier tier, IList<RoundSlice> slices, IEnumerable<int> sourceIndices)
         {
+            SourceIndices = new ReadOnlyCollection<int>(new List<int>(sourceIndices));
             Zone = zone;
             Tier = tier;
             Slices = new ReadOnlyCollection<RoundSlice>(new List<RoundSlice>(slices));

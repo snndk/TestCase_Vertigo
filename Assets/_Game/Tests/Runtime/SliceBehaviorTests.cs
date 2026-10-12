@@ -53,17 +53,17 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
                 new SliceDefinition[]
                 {
                     new TestSliceDefinition(() => calls++),
-                    new RewardSliceDefinition("gold", new RewardDefinition("gold", 10, 1)),
-                    new RewardSliceDefinition("ticket", new RewardDefinition("ticket", 2, 1)),
+                    new RewardSliceDefinition("gold", new RewardDefinition("gold", 1), 10),
+                    new RewardSliceDefinition("ticket", new RewardDefinition("ticket", 1), 2),
                     new BombSliceDefinition("bomb")
                 },
                 standard.GetSlices(WheelTier.Silver).Concat(new[]
                 {
-                    new RewardSliceDefinition("extra", new RewardDefinition("gold", 10, 1))
+                    new RewardSliceDefinition("extra", new RewardDefinition("gold", 1), 10)
                 }),
                 standard.GetSlices(WheelTier.Gold).Concat(new[]
                 {
-                    new RewardSliceDefinition("extra", new RewardDefinition("gold", 10, 1))
+                    new RewardSliceDefinition("extra", new RewardDefinition("gold", 1), 10)
                 }));
             var session = new GameSession(configuration, new SequenceRandom(), new InMemoryProgressStore());
 
@@ -87,7 +87,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
                 new SliceDefinition[]
                 {
                     new TestSliceDefinition(() => { }),
-                    new RewardSliceDefinition("gold", new RewardDefinition("gold", 10, 1)),
+                    new RewardSliceDefinition("gold", new RewardDefinition("gold", 1), 10),
                     new BombSliceDefinition("bomb")
                 },
                 standard.GetSlices(WheelTier.Silver),

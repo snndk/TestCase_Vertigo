@@ -24,7 +24,7 @@ namespace Vertigo.Runtime._Game.Runtime.Session
 
         public GameSession(WheelConfiguration configuration, IRandomSource random, IProgressStore store)
         {
-            m_Rounds = new RoundGenerator(configuration);
+            m_Rounds = new RoundGenerator(configuration, random);
             m_Spins = new SpinSelector(random);
             m_Progress = new ProgressService(store);
             BeginRun();
