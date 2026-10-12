@@ -5,12 +5,6 @@ namespace Vertigo.Presentation._Game.Presentation.ViewContracts
 {
     public interface IGameScreenView
     {
-        event Action SpinRequested;
-        event Action CashOutRequested;
-        event Action RestartRequested;
-        event Action ReviveRequested;
-        event Action GiveUpRequested;
-
         int SliceCount { get; }
 
         // Replaces the whole screen state, including panel visibility and errors.

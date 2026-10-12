@@ -1,5 +1,6 @@
 using System;
 using TMPro;
+using Vertigo.Unity._Game.Unity.Input;
 using UnityEngine;
 using UnityEngine.UI;
 using Vertigo.Presentation._Game.Presentation.GameScreen;
@@ -11,8 +12,7 @@ namespace Vertigo.Unity._Game.Unity.Views
     public class GameScreenView : MonoBehaviour, IGameScreenView
     {
         [SerializeField] private WheelView wheel;
-        [SerializeField] private GameButton spin;
-        [SerializeField] private GameButton cashOut;
+        [SerializeField] private GameInputController input;
         [SerializeField] private TMP_Text exitLabel;
         [SerializeField] private TMP_Text wheelTitle;
         [SerializeField] private TMP_Text wallet;
@@ -28,11 +28,7 @@ namespace Vertigo.Unity._Game.Unity.Views
         private PresentationError m_LastError;
         public int SliceCount => wheel.SliceCount;
         public WheelView Wheel => wheel;
-        public event Action SpinRequested;
-        public event Action CashOutRequested;
-        public event Action RestartRequested;
-        public event Action ReviveRequested;
-        public event Action GiveUpRequested;
+        public GameInputController Input => input;
 
         public void Initialize(WheelConfigurationAsset configuration, RewardAsset currency)
         {
@@ -53,14 +49,13 @@ namespace Vertigo.Unity._Game.Unity.Views
 
         public void ShowStartupError(string message)
         {
-            spin.SetInteractable(false);
-            cashOut.SetInteractable(false);
+            input.Apply(null);
             error.text = message;
         }
 
         public void Render(GameScreenState state)
         {
-            wheel.SetInputBlocked(state.InputBlocked);
+            input.Apply(state);
             wheel.Bind(state.Round);
             var tier = m_Configuration.GetTier(state.Round.Tier);
             wheelTitle.text = tier.Title;
@@ -68,8 +63,6 @@ namespace Vertigo.Unity._Game.Unity.Views
             wallet.text = state.Progress.GetAmount(m_Currency.Id).ToString("N0");
             loot.Show(state.Loot);
             zones.Show(state.Round.Zone);
-            spin.SetInteractable(state.CanSpin);
-            cashOut.SetInteractable(state.CanCashOut);
             exitLabel.text = state.CanCashOut ? "COLLECT & EXIT" : "EXIT AT SAFE ZONE";
             status.text = state.AutomaticRunMessage ?? tier.StatusMessage;
             panels.Show(state);
@@ -79,28 +72,5 @@ namespace Vertigo.Unity._Game.Unity.Views
             m_LastError = state.Error;
         }
 
-        private void OnEnable()
-        {
-            spin.Clicked += OnSpin;
-            cashOut.Clicked += OnCashOut;
-            panels.RestartRequested += OnRestart;
-            panels.ReviveRequested += OnRevive;
-            panels.GiveUpRequested += OnGiveUp;
-        }
-
-        private void OnDisable()
-        {
-            spin.Clicked -= OnSpin;
-            cashOut.Clicked -= OnCashOut;
-            panels.RestartRequested -= OnRestart;
-            panels.ReviveRequested -= OnRevive;
-            panels.GiveUpRequested -= OnGiveUp;
-        }
-
-        private void OnSpin() => SpinRequested?.Invoke();
-        private void OnCashOut() => CashOutRequested?.Invoke();
-        private void OnRestart() => RestartRequested?.Invoke();
-        private void OnRevive() => ReviveRequested?.Invoke();
-        private void OnGiveUp() => GiveUpRequested?.Invoke();
     }
 }

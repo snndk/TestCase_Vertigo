@@ -36,7 +36,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             while (Session.GetSnapshot().Round.Zone == 1 && Time.realtimeSinceStartup < deadline)
                 yield return null;
             Assert.That(Session.GetSnapshot().Round.Zone, Is.EqualTo(2));
-            Assert.That(View.Wheel.InputBlocked, Is.True);
+            Assert.That(View.Input.InputBlocked, Is.True);
             Assert.That(Session.GetSnapshot().RunLoot.Amounts, Is.Empty);
 
             var tap = Root.GetComponentInChildren<AnimationTapView>();
@@ -66,14 +66,14 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
                     automaticRounds.Add(pending.Round.Zone);
                     Assert.That(pending.IsAutomatic, Is.True);
                     Assert.That(pending.WinningSlice, Is.TypeOf<RewardSliceData>());
-                    Assert.That(View.Wheel.InputBlocked, Is.True);
+                    Assert.That(View.Input.InputBlocked, Is.True);
                 }
                 yield return null;
             }
             Assert.That(automaticRounds, Is.EquivalentTo(new[] { 2, 3, 4 }));
             Assert.That(Session.GetSnapshot().Round.Zone, Is.EqualTo(5));
             Assert.That(Session.GetSnapshot().PendingSpin, Is.Null);
-            Assert.That(View.Wheel.InputBlocked, Is.False);
+            Assert.That(View.Input.InputBlocked, Is.False);
             Assert.That(tap.IsRaycastLocationValid(Vector2.zero, null), Is.False);
             Assert.That(Button("spin").interactable, Is.True);
             Assert.That(Button("cashout").interactable, Is.True);
@@ -153,7 +153,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             data.ApplyModifiedPropertiesWithoutUndo();
             View.Initialize(configuration, AssetDatabase.LoadAssetAtPath<RewardAsset>("Assets/_Game/Settings/Rewards/Gold.asset"));
             Session = new GameSession(configuration.CreateRuntime(), Random, new InMemoryProgressStore());
-            Presenter = new GameScreenPresenter(Session, View, new SpinPresentationSequence(View.Wheel, TimeSpan.FromSeconds(5)));
+            Presenter = new GameScreenPresenter(Session, View, View.Input, new SpinPresentationSequence(View.Wheel, TimeSpan.FromSeconds(5)));
             Presenter.Attach();
             Random.Index = 6;
         }

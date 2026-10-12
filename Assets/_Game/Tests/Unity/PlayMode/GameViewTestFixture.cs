@@ -59,7 +59,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             SetDuration(instance.GetComponentInChildren<RewardOutcomeView>(), "flightDuration", 0.03f);
             m_Random = new FixedRandomSource();
             m_Session = new GameSession(configuration.CreateRuntime(), m_Random, new InMemoryProgressStore());
-            m_Presenter = new GameScreenPresenter(m_Session, m_View,
+            m_Presenter = new GameScreenPresenter(m_Session, m_View, m_View.Input,
                 new SpinPresentationSequence(m_View.Wheel, TimeSpan.FromSeconds(5)));
             m_Root.SetActive(true);
             m_Presenter.Attach();

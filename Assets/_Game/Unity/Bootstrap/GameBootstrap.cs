@@ -34,7 +34,7 @@ namespace Vertigo.Unity._Game.Unity.Bootstrap
                 var session = new GameSession(configuration.CreateRuntime(), new SystemRandomSource(),
                     new InMemoryProgressStore(progress), new Reward(currency.Id, reviveCost));
                 screen.Initialize(configuration, currency);
-                m_Presenter = new GameScreenPresenter(session, screen,
+                m_Presenter = new GameScreenPresenter(session, screen, screen.Input,
                     new SpinPresentationSequence(screen.Wheel, TimeSpan.FromSeconds(presentationTimeout)));
             }
             catch (Exception error)

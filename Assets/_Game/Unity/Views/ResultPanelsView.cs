@@ -12,23 +12,16 @@ namespace Vertigo.Unity._Game.Unity.Views
         [SerializeField] private GameObject bombPanel;
         [SerializeField] private RectTransform bombMotion;
         [SerializeField] private TMP_Text bombBody;
-        [SerializeField] private GameButton revive;
         [SerializeField] private TMP_Text reviveLabel;
-        [SerializeField] private GameButton giveUp;
         [SerializeField] private TMP_Text giveUpLabel;
         [SerializeField] private GameObject cashOutPanel;
         [SerializeField] private RectTransform cashOutMotion;
         [SerializeField] private TMP_Text cashOutTitle;
         [SerializeField] private RewardListView cashOutRewards;
-        [SerializeField] private GameButton restart;
         private Tween m_BombTween;
         private Tween m_CashOutTween;
-        private bool m_AwaitingRevive;
         private RewardCatalog m_Catalog;
         private RewardAsset m_Currency;
-        public event Action ReviveRequested;
-        public event Action GiveUpRequested;
-        public event Action RestartRequested;
 
         public void Initialize(RewardCatalog catalog, RewardAsset currency)
         {
@@ -45,14 +38,10 @@ namespace Vertigo.Unity._Game.Unity.Views
 
         private void ShowBomb(GameScreenState state)
         {
-            m_AwaitingRevive = state.AwaitingRevive;
             ShowPanel(bombPanel, bombMotion, state.ShowBomb, ref m_BombTween);
-            revive.gameObject.SetActive(state.AwaitingRevive);
-            revive.SetInteractable(state.CanRevive);
             reviveLabel.text = state.ReviveCost == null ? "REVIVE" :
                 "REVIVE " + state.ReviveCost.Amount.ToString("N0") + " " + GetCurrencyName(state.ReviveCost.RewardId);
             giveUpLabel.text = state.AwaitingRevive ? "GIVE UP" : "RESTART";
-            giveUp.SetInteractable(state.ShowBomb);
             bombBody.text = state.AwaitingRevive ?
                 "Revive to keep your rewards and continue.\nGive up to start a new run." :
                 "Your run rewards were lost.\nStart a new run and try again!";
@@ -61,7 +50,6 @@ namespace Vertigo.Unity._Game.Unity.Views
         private void ShowCashOut(GameScreenState state)
         {
             ShowPanel(cashOutPanel, cashOutMotion, state.CashOut != null, ref m_CashOutTween);
-            restart.SetInteractable(state.CanRestart);
             if (state.CashOut != null)
             {
                 cashOutTitle.text = "REWARDS COLLECTED - ZONE " + state.CashOut.Zone;
@@ -88,18 +76,8 @@ namespace Vertigo.Unity._Game.Unity.Views
                 Vector3.one, .25f).SetEase(Ease.OutBack).SetUpdate(true);
         }
 
-        private void OnEnable()
-        {
-            revive.Clicked += OnRevive;
-            giveUp.Clicked += OnGiveUp;
-            restart.Clicked += OnRestart;
-        }
-
         private void OnDisable()
         {
-            revive.Clicked -= OnRevive;
-            giveUp.Clicked -= OnGiveUp;
-            restart.Clicked -= OnRestart;
             m_BombTween?.Kill();
             m_CashOutTween?.Kill();
             m_BombTween = null;
@@ -108,14 +86,5 @@ namespace Vertigo.Unity._Game.Unity.Views
             cashOutMotion.localScale = Vector3.one;
         }
 
-        private void OnRevive() => ReviveRequested?.Invoke();
-        private void OnRestart() => RestartRequested?.Invoke();
-        private void OnGiveUp()
-        {
-            if (m_AwaitingRevive)
-                GiveUpRequested?.Invoke();
-            else
-                RestartRequested?.Invoke();
-        }
     }
 }

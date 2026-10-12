@@ -10,6 +10,7 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
     {
         private readonly GameSession m_Session;
         private readonly IGameScreenView m_View;
+        private readonly IGameInput m_Input;
         private readonly SpinPresentationSequence m_Spin;
         private RewardCollection m_DisplayedLoot;
         private PresentationError m_Error;
@@ -19,10 +20,11 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
         private bool m_AutomaticSpinPaused;
         private long m_BindingVersion;
 
-        public GameScreenPresenter(GameSession session, IGameScreenView view, SpinPresentationSequence spin)
+        public GameScreenPresenter(GameSession session, IGameScreenView view, IGameInput input, SpinPresentationSequence spin)
         {
             m_Session = session ?? throw new ArgumentNullException(nameof(session));
             m_View = view ?? throw new ArgumentNullException(nameof(view));
+            m_Input = input ?? throw new ArgumentNullException(nameof(input));
             m_Spin = spin ?? throw new ArgumentNullException(nameof(spin));
         }
 
@@ -42,11 +44,11 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
             m_DisplayedLoot = m_Session.GetSnapshot().RunLoot;
             m_IsAttached = true;
             m_BindingVersion++;
-            m_View.SpinRequested += OnSpinRequested;
-            m_View.CashOutRequested += OnCashOutRequested;
-            m_View.RestartRequested += OnRestartRequested;
-            m_View.ReviveRequested += OnReviveRequested;
-            m_View.GiveUpRequested += OnGiveUpRequested;
+            m_Input.SpinRequested += OnSpinRequested;
+            m_Input.CashOutRequested += OnCashOutRequested;
+            m_Input.RestartRequested += OnRestartRequested;
+            m_Input.ReviveRequested += OnReviveRequested;
+            m_Input.GiveUpRequested += OnGiveUpRequested;
             try
             {
                 Render();
@@ -65,11 +67,11 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
 
             m_IsAttached = false;
             m_BindingVersion++;
-            m_View.SpinRequested -= OnSpinRequested;
-            m_View.CashOutRequested -= OnCashOutRequested;
-            m_View.RestartRequested -= OnRestartRequested;
-            m_View.ReviveRequested -= OnReviveRequested;
-            m_View.GiveUpRequested -= OnGiveUpRequested;
+            m_Input.SpinRequested -= OnSpinRequested;
+            m_Input.CashOutRequested -= OnCashOutRequested;
+            m_Input.RestartRequested -= OnRestartRequested;
+            m_Input.ReviveRequested -= OnReviveRequested;
+            m_Input.GiveUpRequested -= OnGiveUpRequested;
             try
             {
                 m_Spin.Cancel();

@@ -698,15 +698,12 @@ MonoBehaviour:
   bombPanel: {fileID: 3178032100795556949}
   bombMotion: {fileID: 8850459786307297234}
   bombBody: {fileID: 8255267584768670662}
-  revive: {fileID: 4516441992317986131}
   reviveLabel: {fileID: 4614712877755574523}
-  giveUp: {fileID: 7372159644470606009}
   giveUpLabel: {fileID: 2343130889651508844}
   cashOutPanel: {fileID: 5012671038992664045}
   cashOutMotion: {fileID: 952883571732378944}
   cashOutTitle: {fileID: 3222949502370658414}
   cashOutRewards: {fileID: 7241345217605721276}
-  restart: {fileID: 354993500729712337}
 --- !u!1 &236429883565821941
 GameObject:
   m_ObjectHideFlags: 0
@@ -2267,6 +2264,7 @@ GameObject:
   - component: {fileID: 1430149706155061614}
   - component: {fileID: 2377958637002528218}
   - component: {fileID: 6727050888538020064}
+  - component: {fileID: 812341990123450001}
   m_Layer: 0
   m_Name: ui_canvas_game
   m_TagString: Untagged
@@ -2375,8 +2373,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Views.GameScreenView
   wheel: {fileID: 8546253114794874879}
-  spin: {fileID: 5554799828578950878}
-  cashOut: {fileID: 4055638136571675514}
   exitLabel: {fileID: 5486888726267078628}
   wheelTitle: {fileID: 1489350677492629628}
   wallet: {fileID: 1507067518732024619}
@@ -2387,6 +2383,7 @@ MonoBehaviour:
   loot: {fileID: 3168929112265288676}
   zones: {fileID: 1936340784235621444}
   panels: {fileID: 211817585716992398}
+  input: {fileID: 812341990123450001}
 --- !u!114 &6727050888538020064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14197,4 +14194,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e6df9793c2bdb44bba6dc3c316a3e13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Views.AnimationTapView
+--- !u!114 &812341990123450001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405305433897406804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19f7f390c56d421d86c562b603cf085e, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Input.GameInputController
+  spin: {fileID: 5554799828578950878}
+  cashOut: {fileID: 4055638136571675514}
   wheel: {fileID: 8546253114794874879}
+  revive: {fileID: 4516441992317986131}
+  giveUp: {fileID: 7372159644470606009}
+  restart: {fileID: 354993500729712337}
+  tap: {fileID: 2579180274636254361}

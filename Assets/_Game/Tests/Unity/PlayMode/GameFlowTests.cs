@@ -108,7 +108,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             var configuration = CreateFixedConfiguration();
             Session = new GameSession(configuration.CreateRuntime(), Random,
                 new InMemoryProgressStore(new RewardCollection(new[] { new Reward("Gold", 250) })), new Reward("Gold", 25));
-            Presenter = new GameScreenPresenter(Session, View,
+            Presenter = new GameScreenPresenter(Session, View, View.Input,
                 new SpinPresentationSequence(View.Wheel, TimeSpan.FromSeconds(5)));
             Presenter.Attach();
             yield return SpinAndWait();
@@ -148,7 +148,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             Session = new GameSession(configuration.CreateRuntime(), Random,
                 new InMemoryProgressStore(new RewardCollection(new[] { new Reward(currency.Id, 100) })),
                 new Reward(currency.Id, 25));
-            Presenter = new GameScreenPresenter(Session, View,
+            Presenter = new GameScreenPresenter(Session, View, View.Input,
                 new SpinPresentationSequence(View.Wheel, TimeSpan.FromSeconds(5)));
             Presenter.Attach();
             Assert.That(Text("wallet_amount"), Is.EqualTo("100"));
@@ -213,7 +213,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
                 configData.ApplyModifiedPropertiesWithoutUndo();
                 View.Initialize(configuration, original.Reward);
                 Session = new GameSession(configuration.CreateRuntime(), Random, new InMemoryProgressStore());
-                Presenter = new GameScreenPresenter(Session, View,
+                Presenter = new GameScreenPresenter(Session, View, View.Input,
                     new SpinPresentationSequence(View.Wheel, TimeSpan.FromSeconds(5)));
                 Presenter.Attach();
                 var views = View.Wheel.GetComponentsInChildren<WheelSliceView>();
@@ -269,7 +269,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
                 var random = new SequenceRandomSource(new[] { 0, 0, 0, 0 }.Concat(Enumerable.Repeat(40, 8)));
                 Session = new GameSession(configuration.CreateRuntime(), random, new InMemoryProgressStore());
                 View.Initialize(configuration, small.Reward);
-                Presenter = new GameScreenPresenter(Session, View,
+                Presenter = new GameScreenPresenter(Session, View, View.Input,
                     new SpinPresentationSequence(View.Wheel, TimeSpan.FromSeconds(5)));
                 Presenter.Attach();
                 for (var zone = 1; zone < 5; zone++)

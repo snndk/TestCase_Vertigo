@@ -22,18 +22,18 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
         public void AttachIsIdempotentAndDetachRemovesAllListeners()
         {
             m_Context.Presenter.Attach();
-            Assert.That(m_Context.View.SpinListeners, Is.EqualTo(1));
-            Assert.That(m_Context.View.CashOutListeners, Is.EqualTo(1));
-            Assert.That(m_Context.View.RestartListeners, Is.EqualTo(1));
+            Assert.That(m_Context.Input.SpinListeners, Is.EqualTo(1));
+            Assert.That(m_Context.Input.CashOutListeners, Is.EqualTo(1));
+            Assert.That(m_Context.Input.RestartListeners, Is.EqualTo(1));
             m_Context.Presenter.Detach();
             m_Context.Presenter.Detach();
-            Assert.That(m_Context.View.SpinListeners, Is.Zero);
-            Assert.That(m_Context.View.CashOutListeners, Is.Zero);
-            Assert.That(m_Context.View.RestartListeners, Is.Zero);
-            m_Context.View.RequestSpin();
+            Assert.That(m_Context.Input.SpinListeners, Is.Zero);
+            Assert.That(m_Context.Input.CashOutListeners, Is.Zero);
+            Assert.That(m_Context.Input.RestartListeners, Is.Zero);
+            m_Context.Input.RequestSpin();
             Assert.That(m_Context.Random.Calls, Is.Zero);
             m_Context.Presenter.Attach();
-            m_Context.View.RequestSpin();
+            m_Context.Input.RequestSpin();
             Assert.That(m_Context.Random.Calls, Is.EqualTo(1));
         }
 
@@ -41,7 +41,7 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
         public void LootAppearsOnlyAfterTheOutcomeAndNextRoundIsNotShownEarly()
         {
             var initial = m_Context.View.State;
-            m_Context.View.RequestSpin();
+            m_Context.Input.RequestSpin();
             Assert.That(m_Context.Session.GetSnapshot().RunLoot.GetAmount("coins"), Is.EqualTo(10));
             Assert.That(m_Context.View.State.Loot.Amounts, Is.Empty);
             Assert.That(m_Context.View.State.Round.Zone, Is.EqualTo(1));
@@ -60,10 +60,10 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
         [Test]
         public void ExtraInputsDuringSpinCannotAlterTheResultOrDisplayLootEarly()
         {
-            m_Context.View.RequestSpin();
-            m_Context.View.RequestSpin();
-            m_Context.View.RequestCashOut();
-            m_Context.View.RequestRestart();
+            m_Context.Input.RequestSpin();
+            m_Context.Input.RequestSpin();
+            m_Context.Input.RequestCashOut();
+            m_Context.Input.RequestRestart();
             Assert.That(m_Context.Random.Calls, Is.EqualTo(1));
             Assert.That(m_Context.Store.Writes, Is.Zero);
             Assert.That(m_Context.View.State.Loot.Amounts, Is.Empty);
@@ -75,7 +75,7 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
         [TestCase(2)]
         public void DetachAtAnyStageKeepsEarnedLootAndSkipsTheRest(int stage)
         {
-            m_Context.View.RequestSpin();
+            m_Context.Input.RequestSpin();
             for (var index = 0; index < stage; index++)
                 m_Context.SpinView.CompleteLatest();
             var renders = m_Context.View.History.Count;
@@ -94,11 +94,11 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
         [Test]
         public void OldCallbackAfterReattachCannotFinishTheNewSpin()
         {
-            m_Context.View.RequestSpin();
+            m_Context.Input.RequestSpin();
             var old = m_Context.SpinView.Requests[0];
             m_Context.Presenter.Detach();
             m_Context.Presenter.Attach();
-            m_Context.View.RequestSpin();
+            m_Context.Input.RequestSpin();
             var pending = m_Context.Session.GetSnapshot().PendingSpin;
             old.Complete(VisualResult.Completed);
             old.Complete(VisualResult.Failed(new Exception("Old failure")));
@@ -116,7 +116,7 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
         {
             m_Context.Presenter.Detach();
             m_Context.Session.RequestSpin();
-            var replacement = new GameScreenPresenter(m_Context.Session, m_Context.View,
+            var replacement = new GameScreenPresenter(m_Context.Session, m_Context.View, m_Context.Input,
                 new SpinPresentationSequence(m_Context.SpinView, TimeSpan.FromSeconds(10)));
             replacement.Attach();
             Assert.That(m_Context.View.State.Round.Zone, Is.EqualTo(2));
@@ -128,7 +128,7 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
         [Test]
         public void CancellationReportedByViewResolvesThePendingSpin()
         {
-            m_Context.View.RequestSpin();
+            m_Context.Input.RequestSpin();
             m_Context.SpinView.CompleteLatest(VisualResult.Cancelled);
             Assert.That(m_Context.View.State.Round.Zone, Is.EqualTo(2));
             Assert.That(m_Context.View.State.CanSpin, Is.True);
@@ -138,20 +138,20 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
         [Test]
         public void FailureReportsItsCauseAndKeepsTheCommittedReward()
         {
-            m_Context.View.RequestSpin();
+            m_Context.Input.RequestSpin();
             var error = new InvalidOperationException("Tween error");
             m_Context.SpinView.CompleteLatest(VisualResult.Failed(error));
             Assert.That(m_Context.View.State.Error.Cause, Is.SameAs(error));
             Assert.That(m_Context.View.State.CanSpin, Is.True);
             Assert.That(m_Context.View.State.Loot.GetAmount("coins"), Is.EqualTo(10));
-            m_Context.View.RequestSpin();
+            m_Context.Input.RequestSpin();
             Assert.That(m_Context.View.State.Error, Is.Null);
         }
 
         [Test]
         public void HungViewTimesOutAndLateCallbackDoesNothing()
         {
-            m_Context.View.RequestSpin();
+            m_Context.Input.RequestSpin();
             m_Context.Presenter.AdvancePresentation(TimeSpan.FromSeconds(10));
             Assert.That(m_Context.View.State.Error.Cause, Is.TypeOf<TimeoutException>());
             Assert.That(m_Context.View.State.CanSpin, Is.True);
@@ -163,11 +163,11 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
         [Test]
         public void BombPanelWaitsForOutcomeThenRestartCreatesACleanRun()
         {
-            m_Context.View.RequestSpin();
+            m_Context.Input.RequestSpin();
             m_Context.CompleteSpin();
             var oldRun = m_Context.Session.GetSnapshot().RunId;
             m_Context.Random.Index = 2;
-            m_Context.View.RequestSpin();
+            m_Context.Input.RequestSpin();
             var bombRequest = m_Context.SpinView.Requests[3];
             Assert.That(m_Context.View.State.ShowBomb, Is.False);
             Assert.That(m_Context.View.State.Loot.GetAmount("coins"), Is.EqualTo(10));
@@ -177,12 +177,12 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
             Assert.That(m_Context.View.State.CanRestart, Is.True);
             Assert.That(m_Context.View.State.CanSpin, Is.False);
             Assert.That(m_Context.View.State.Loot.Amounts, Is.Empty);
-            m_Context.View.RequestRestart();
+            m_Context.Input.RequestRestart();
             Assert.That(m_Context.Session.GetSnapshot().RunId, Is.Not.EqualTo(oldRun));
             Assert.That(m_Context.View.State.ShowBomb, Is.False);
             Assert.That(m_Context.View.State.Round.Zone, Is.EqualTo(1));
             m_Context.Random.Index = 0;
-            m_Context.View.RequestSpin();
+            m_Context.Input.RequestSpin();
             bombRequest.Complete(VisualResult.Completed);
             Assert.That(m_Context.Session.GetSnapshot().Status, Is.EqualTo(SessionStatus.Resolving));
         }
@@ -191,7 +191,7 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
         public void DetachingOnBombStillShowsLossWhenReattached()
         {
             m_Context.Random.Index = 2;
-            m_Context.View.RequestSpin();
+            m_Context.Input.RequestSpin();
             m_Context.Presenter.Detach();
             m_Context.Presenter.Attach();
             Assert.That(m_Context.View.State.ShowBomb, Is.True);
@@ -205,19 +205,19 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
             m_Context.AdvanceTo(zone);
             var loot = m_Context.Session.GetSnapshot().RunLoot;
             Assert.That(m_Context.View.State.CanCashOut, Is.True);
-            m_Context.View.RequestCashOut();
+            m_Context.Input.RequestCashOut();
             var receipt = m_Context.View.State.CashOut;
             Assert.That(receipt, Is.Not.Null);
             CollectionAssert.AreEquivalent(loot.Amounts, receipt.Rewards.Amounts);
             CollectionAssert.AreEquivalent(loot.Amounts, m_Context.View.State.Progress.Amounts);
             Assert.That(m_Context.View.State.CanRestart, Is.True);
             Assert.That(m_Context.View.State.CanCashOut, Is.False);
-            m_Context.View.RequestCashOut();
+            m_Context.Input.RequestCashOut();
             Assert.That(m_Context.Store.Writes, Is.EqualTo(1));
             m_Context.Presenter.Detach();
             m_Context.Presenter.Attach();
             Assert.That(m_Context.View.State.CashOut, Is.SameAs(receipt));
-            m_Context.View.RequestRestart();
+            m_Context.Input.RequestRestart();
             Assert.That(m_Context.View.State.CashOut, Is.Null);
             CollectionAssert.AreEquivalent(loot.Amounts, m_Context.View.State.Progress.Amounts);
         }
@@ -226,7 +226,7 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
         public void UnsafeCashOutIsRejectedByRuntimeWithoutWriting()
         {
             Assert.That(m_Context.View.State.CanCashOut, Is.False);
-            m_Context.View.RequestCashOut();
+            m_Context.Input.RequestCashOut();
             Assert.That(m_Context.Store.Writes, Is.Zero);
             Assert.That(m_Context.View.State.CashOut, Is.Null);
         }
@@ -237,13 +237,13 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
             m_Context.AdvanceTo(5);
             var loot = m_Context.View.State.Loot;
             m_Context.Store.FailWrites = true;
-            m_Context.View.RequestCashOut();
+            m_Context.Input.RequestCashOut();
             Assert.That(m_Context.View.State.Error.Message, Does.Contain("saved"));
             Assert.That(m_Context.View.State.CashOut, Is.Null);
             Assert.That(m_Context.View.State.Loot, Is.SameAs(loot));
             Assert.That(m_Context.View.State.CanCashOut, Is.True);
             m_Context.Store.FailWrites = false;
-            m_Context.View.RequestCashOut();
+            m_Context.Input.RequestCashOut();
             Assert.That(m_Context.View.State.Error, Is.Null);
             CollectionAssert.AreEquivalent(loot.Amounts, m_Context.View.State.CashOut.Rewards.Amounts);
         }
@@ -255,12 +255,12 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
             var loot = m_Context.View.State.Loot;
             var error = new InvalidOperationException("Disk error");
             m_Context.Store.WriteFailure = error;
-            m_Context.View.RequestCashOut();
+            m_Context.Input.RequestCashOut();
             Assert.That(m_Context.View.State.Error.Cause, Is.SameAs(error));
             Assert.That(m_Context.View.State.Loot, Is.SameAs(loot));
             Assert.That(m_Context.View.State.CanCashOut, Is.True);
             m_Context.Store.WriteFailure = null;
-            m_Context.View.RequestCashOut();
+            m_Context.Input.RequestCashOut();
             Assert.That(m_Context.View.State.CashOut, Is.Not.Null);
         }
 
@@ -269,14 +269,14 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
         {
             m_Context.AdvanceTo(5);
             m_Context.View.RenderFailure = new InvalidOperationException("Screen unavailable");
-            Assert.Throws<InvalidOperationException>(() => m_Context.View.RequestCashOut());
+            Assert.Throws<InvalidOperationException>(() => m_Context.Input.RequestCashOut());
             Assert.That(m_Context.Session.GetSnapshot().Status, Is.EqualTo(SessionStatus.CashedOut));
             Assert.That(m_Context.Store.Writes, Is.EqualTo(1));
             m_Context.View.RenderFailure = null;
             m_Context.Presenter.Detach();
             m_Context.Presenter.Attach();
             Assert.That(m_Context.View.State.CashOut, Is.Not.Null);
-            m_Context.View.RequestCashOut();
+            m_Context.Input.RequestCashOut();
             Assert.That(m_Context.Store.Writes, Is.EqualTo(1));
         }
 
@@ -284,7 +284,7 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
         public void RenderingFailureBeforeAnimationDoesNotLeaveRuntimeResolving()
         {
             m_Context.View.RenderFailure = new InvalidOperationException("Screen unavailable");
-            Assert.Throws<InvalidOperationException>(() => m_Context.View.RequestSpin());
+            Assert.Throws<InvalidOperationException>(() => m_Context.Input.RequestSpin());
             Assert.That(m_Context.Session.GetSnapshot().Status, Is.EqualTo(SessionStatus.Ready));
             Assert.That(m_Context.Session.GetSnapshot().Round.Zone, Is.EqualTo(2));
             Assert.That(m_Context.Sequence.IsRunning, Is.False);
@@ -294,17 +294,17 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
         public void DetachDuringInitialSpinRenderDoesNotStartAnOrphanAnimation()
         {
             m_Context.View.DuringRender = m_Context.Presenter.Detach;
-            m_Context.View.RequestSpin();
+            m_Context.Input.RequestSpin();
             Assert.That(m_Context.SpinView.Requests, Is.Empty);
             Assert.That(m_Context.Session.GetSnapshot().Status, Is.EqualTo(SessionStatus.Ready));
-            Assert.That(m_Context.View.SpinListeners, Is.Zero);
+            Assert.That(m_Context.Input.SpinListeners, Is.Zero);
         }
 
         [Test]
         public void ReentrantInputDuringRenderIsIgnored()
         {
-            m_Context.View.DuringRender = m_Context.View.RequestSpin;
-            m_Context.View.RequestSpin();
+            m_Context.View.DuringRender = m_Context.Input.RequestSpin;
+            m_Context.Input.RequestSpin();
             m_Context.CompleteSpin();
             Assert.That(m_Context.Random.Calls, Is.EqualTo(1));
             Assert.That(m_Context.Session.GetSnapshot().Status, Is.EqualTo(SessionStatus.Ready));
@@ -317,7 +317,7 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
             var pending = m_Context.Session.RequestSpin().Result;
             m_Context.View.SliceCount = 8;
             Assert.Throws<InvalidOperationException>(() => m_Context.Presenter.Attach());
-            Assert.That(m_Context.View.SpinListeners, Is.Zero);
+            Assert.That(m_Context.Input.SpinListeners, Is.Zero);
             Assert.That(m_Context.Session.GetSnapshot().PendingSpin, Is.SameAs(pending));
             Assert.That(m_Context.Session.GetSnapshot().Round.Slices.Count, Is.EqualTo(3));
         }
@@ -328,18 +328,18 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
             m_Context.Presenter.Detach();
             m_Context.View.RenderFailure = new InvalidOperationException("Missing view reference");
             Assert.Throws<InvalidOperationException>(() => m_Context.Presenter.Attach());
-            Assert.That(m_Context.View.SpinListeners, Is.Zero);
-            Assert.That(m_Context.View.CashOutListeners, Is.Zero);
-            Assert.That(m_Context.View.RestartListeners, Is.Zero);
+            Assert.That(m_Context.Input.SpinListeners, Is.Zero);
+            Assert.That(m_Context.Input.CashOutListeners, Is.Zero);
+            Assert.That(m_Context.Input.RestartListeners, Is.Zero);
             m_Context.View.RenderFailure = null;
             m_Context.Presenter.Attach();
-            Assert.That(m_Context.View.SpinListeners, Is.EqualTo(1));
+            Assert.That(m_Context.Input.SpinListeners, Is.EqualTo(1));
         }
 
         [Test]
         public void CleanupErrorWhileDetachedIsRetainedForTheReturningScreen()
         {
-            m_Context.View.RequestSpin();
+            m_Context.Input.RequestSpin();
             m_Context.SpinView.ThrowOnCancel = true;
             m_Context.Presenter.Detach();
             Assert.That(m_Context.Session.GetSnapshot().Status, Is.EqualTo(SessionStatus.Ready));

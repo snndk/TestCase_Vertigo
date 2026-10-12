@@ -12,6 +12,7 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
     {
         public FixedRandomSource Random { get; } = new FixedRandomSource();
         public FakeProgressStore Store { get; } = new FakeProgressStore();
+        public FakeGameInput Input { get; } = new FakeGameInput();
         public FakeGameScreenView View { get; } = new FakeGameScreenView();
         public FakeSpinView SpinView { get; } = new FakeSpinView();
         public GameSession Session { get; }
@@ -41,7 +42,7 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
                 Store.TrySave(progress);
             Session = new GameSession(configuration, Random, Store, reviveCost);
             Sequence = new SpinPresentationSequence(SpinView, TimeSpan.FromSeconds(10));
-            Presenter = new GameScreenPresenter(Session, View, Sequence);
+            Presenter = new GameScreenPresenter(Session, View, Input, Sequence);
         }
 
         public void CompleteSpin()
@@ -55,7 +56,7 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
             while (Session.GetSnapshot().Round.Zone < zone)
             {
                 Random.Index = Session.GetSnapshot().Round.Zone % 2;
-                View.RequestSpin();
+                Input.RequestSpin();
                 CompleteSpin();
             }
         }

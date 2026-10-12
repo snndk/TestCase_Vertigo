@@ -15,7 +15,7 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
             m_Context = new PresentationTestContext(includeLucky: true);
             m_Context.Presenter.Attach();
             m_Context.Random.Index = 2;
-            m_Context.View.RequestSpin();
+            m_Context.Input.RequestSpin();
             m_Context.CompleteSpin();
             m_Context.Random.Index = 0;
         }
@@ -28,11 +28,11 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
         {
             Assert.That(m_Context.View.State.InputBlocked, Is.True);
             var calls = m_Context.Random.Calls;
-            m_Context.View.RequestSpin();
-            m_Context.View.RequestCashOut();
-            m_Context.View.RequestRestart();
-            m_Context.View.RequestRevive();
-            m_Context.View.RequestGiveUp();
+            m_Context.Input.RequestSpin();
+            m_Context.Input.RequestCashOut();
+            m_Context.Input.RequestRestart();
+            m_Context.Input.RequestRevive();
+            m_Context.Input.RequestGiveUp();
             Assert.That(m_Context.Random.Calls, Is.EqualTo(calls));
             m_Context.SpinView.CompleteSynchronously = true;
             for (var zone = 3; zone <= 5; zone++)
@@ -113,18 +113,18 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
             m_Context.Random.Index = -1;
             m_Context.Presenter.AdvancePresentation(TimeSpan.Zero);
             var calls = m_Context.Random.Calls;
-            m_Context.View.RequestSpin();
+            m_Context.Input.RequestSpin();
             Assert.That(m_Context.Random.Calls, Is.EqualTo(calls + 1));
             m_Context.Presenter.Detach();
             m_Context.Presenter.Attach();
             m_Context.Presenter.AdvancePresentation(TimeSpan.Zero);
             Assert.That(m_Context.Random.Calls, Is.EqualTo(calls + 1));
-            m_Context.View.RequestCashOut();
-            m_Context.View.RequestRestart();
+            m_Context.Input.RequestCashOut();
+            m_Context.Input.RequestRestart();
             Assert.That(m_Context.Session.GetSnapshot().Round.Zone, Is.EqualTo(2));
 
             m_Context.Random.Index = 0;
-            m_Context.View.RequestSpin();
+            m_Context.Input.RequestSpin();
             Assert.That(m_Context.Session.GetSnapshot().PendingSpin.IsAutomatic, Is.True);
             Assert.That(m_Context.View.State.InputBlocked, Is.True);
             Assert.That(m_Context.View.State.CanSpin, Is.False);

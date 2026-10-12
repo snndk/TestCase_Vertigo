@@ -30,7 +30,6 @@ namespace Vertigo.Unity._Game.Unity.Views
         private bool m_SpinAccelerated;
         private float m_RewardSpeed = 1f;
         private SliceOutcomeView m_Outcome;
-        public bool InputBlocked { get; private set; }
         public int SliceCount => slices.Length;
         public float Rotation => motion.localEulerAngles.z;
         public bool CanAccelerate => m_Operation.IsPlaying &&
@@ -41,11 +40,6 @@ namespace Vertigo.Unity._Game.Unity.Views
             m_Configuration = configuration;
             foreach (var outcome in outcomes)
                 outcome.ResetVisuals();
-        }
-
-        public void SetInputBlocked(bool blocked)
-        {
-            InputBlocked = blocked;
         }
 
         public void Bind(Round round)
