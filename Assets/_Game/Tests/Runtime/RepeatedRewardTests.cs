@@ -81,7 +81,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             var reward = new RewardDefinition("gold", 11);
             var small = new RewardSliceDefinition("gold", reward, 10);
             var large = new RewardSliceDefinition("gold", reward, 20);
-            var special = new RewardSliceDefinition("special", new RewardDefinition("special", 1), 1, true);
+            var special = new RewardSliceDefinition("special", new RewardDefinition("special", 1), 1);
             return new WheelConfiguration(
                 new SliceDefinition[] { small, large, new BombSliceDefinition("bomb") },
                 new[] { small, large, small },

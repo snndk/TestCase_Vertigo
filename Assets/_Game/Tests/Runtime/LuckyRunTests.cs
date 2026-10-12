@@ -146,7 +146,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
                 new SliceDefinition[] { coins, lucky, tickets, new BombSliceDefinition("bomb") },
                 new SliceDefinition[] { coins, lucky, tickets, gems },
                 new SliceDefinition[] { coins, lucky, tickets,
-                    new RewardSliceDefinition("special", new RewardDefinition("special", 1), 1, true) });
+                    new RewardSliceDefinition("special", new RewardDefinition("special", 1), 1) });
         }
     }
 }

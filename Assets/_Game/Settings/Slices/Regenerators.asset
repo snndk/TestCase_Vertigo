@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Authoring.RewardSliceAsset
   sliceId: Regenerators
   reward: {fileID: 11400000, guid: f5dcd997900ece841b36be322ffa3b69, type: 2}
-  isSpecial: 0
   baseAmount: 1

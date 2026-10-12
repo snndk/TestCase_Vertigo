@@ -84,7 +84,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator GoldTierUsesRealVisualsAndAwardsSpecialReward()
+        public IEnumerator GoldTierUsesRealVisualsAndAwardsConfiguredReward()
         {
             for (var zone = 1; zone < 30; zone++)
             {

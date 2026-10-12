@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Authoring.RewardSliceAsset
   sliceId: Cash_extra
   reward: {fileID: 11400000, guid: 953742c161b8ab044abde11a9f2cf202, type: 2}
-  isSpecial: 0
   baseAmount: 100

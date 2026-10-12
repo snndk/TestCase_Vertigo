@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Authoring.RewardSliceAsset
   sliceId: summer_bayonet
   reward: {fileID: 11400000, guid: c3372243df57e5a4ea35c353c160d5f2, type: 2}
-  isSpecial: 1
   baseAmount: 1

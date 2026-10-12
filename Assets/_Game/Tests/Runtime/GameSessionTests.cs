@@ -237,7 +237,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
         }
 
         [Test]
-        public void FullRunReachesGoldCollectsSpecialRewardAndCashesOutAtNextSafeZone()
+        public void FullRunReachesGoldCollectsConfiguredRewardAndCashesOutAtNextSafeZone()
         {
             AdvanceTo(30);
             Assert.That(m_Session.GetSnapshot().Round.Tier, Is.EqualTo(WheelTier.Gold));

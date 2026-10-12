@@ -80,7 +80,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
 
         private static WheelConfiguration CreateConfiguration(RewardSliceDefinition small, RewardSliceDefinition large)
         {
-            var special = new RewardSliceDefinition("special", new RewardDefinition("special", 1), 1, true);
+            var special = new RewardSliceDefinition("special", new RewardDefinition("special", 1), 1);
             return new WheelConfiguration(
                 new SliceDefinition[] { small, large, new BombSliceDefinition("bomb") },
                 new[] { small, large, small }, new[] { small, large, special });

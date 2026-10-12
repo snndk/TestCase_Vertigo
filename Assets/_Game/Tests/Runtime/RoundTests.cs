@@ -70,7 +70,6 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             var round = new RoundGenerator(TestWheelFactory.Create(), new SequenceRandom()).Generate(zone);
             Assert.That(round.Tier, Is.EqualTo(expected));
             Assert.That(round.Slices.OfType<BombSliceData>().Count(), Is.EqualTo(expected == WheelTier.Bronze ? 1 : 0));
-            Assert.That(round.Slices.OfType<RewardSliceData>().Any(s => s.IsSpecial), Is.EqualTo(expected == WheelTier.Gold));
         }
 
         [Test]
@@ -134,7 +133,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             var changed = valid.GetSlices(tier).ToArray();
             for (var i = 0; i < changed.Length; i++)
                 changed[i] = i < bombCount ? new BombSliceDefinition("bomb" + i) :
-                    new RewardSliceDefinition("reward" + i, new RewardDefinition("exclusive" + i, 1), 1, tier == WheelTier.Gold);
+                    new RewardSliceDefinition("reward" + i, new RewardDefinition("exclusive" + i, 1), 1);
 
             Assert.Throws<ArgumentException>(() => new WheelConfiguration(
                 tier == WheelTier.Bronze ? changed : valid.GetSlices(WheelTier.Bronze),
@@ -143,16 +142,16 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
         }
 
         [Test]
-        public void GoldMustContainAnExclusiveSpecialReward()
+        public void RewardIdentitiesCanBeSharedAcrossEveryTier()
         {
             var valid = TestWheelFactory.Create();
-            Assert.Throws<ArgumentException>(() => new WheelConfiguration(valid.GetSlices(WheelTier.Bronze),
-                valid.GetSlices(WheelTier.Silver), valid.GetSlices(WheelTier.Silver)));
-
-            var gold = valid.GetSlices(WheelTier.Gold).ToArray();
-            gold[2] = new RewardSliceDefinition("special", new RewardDefinition("gold", 1), 10, true);
-            Assert.Throws<ArgumentException>(() => new WheelConfiguration(valid.GetSlices(WheelTier.Bronze),
-                valid.GetSlices(WheelTier.Silver), gold));
+            var goldRewards = valid.GetSlices(WheelTier.Gold);
+            var bronze = new SliceDefinition[] { goldRewards[0], goldRewards[2], new BombSliceDefinition("bomb") };
+            var configuration = new WheelConfiguration(bronze, goldRewards, goldRewards);
+            var generator = new RoundGenerator(configuration, new SequenceRandom());
+            foreach (var zone in new[] { 1, 5, 30 })
+                Assert.That(generator.Generate(zone).Slices.OfType<RewardSliceData>()
+                    .Any(slice => slice.Reward.RewardId == "special"), Is.True);
         }
 
         [Test]

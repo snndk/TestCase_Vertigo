@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Authoring.RewardSliceAsset
   sliceId: Grenades
   reward: {fileID: 11400000, guid: 5ef0d97434fd15641956265630c53bb2, type: 2}
-  isSpecial: 0
   baseAmount: 1

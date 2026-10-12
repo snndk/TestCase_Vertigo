@@ -6,12 +6,10 @@ namespace Vertigo.Runtime._Game.Runtime.Rounds
     public class RewardSliceData : SliceData
     {
         public Reward Reward { get; }
-        public bool IsSpecial { get; }
 
-        public RewardSliceData(string id, Reward reward, bool isSpecial = false) : base(id)
+        public RewardSliceData(string id, Reward reward) : base(id)
         {
             Reward = reward ?? throw new ArgumentNullException(nameof(reward));
-            IsSpecial = isSpecial;
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
                 new SliceDefinition[] { custom, coins, tickets, new BombSliceDefinition("bomb") },
                 new SliceDefinition[] { custom, coins, tickets, coins },
                 new SliceDefinition[] { custom, coins, tickets,
-                    new RewardSliceDefinition("special", new RewardDefinition("special", 1), 1, true) });
+                    new RewardSliceDefinition("special", new RewardDefinition("special", 1), 1) });
             return new GameSession(configuration, random ?? new SequenceRandom(), new InMemoryProgressStore());
         }
     }

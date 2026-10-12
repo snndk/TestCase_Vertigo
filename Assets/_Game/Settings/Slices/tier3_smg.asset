@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Authoring.RewardSliceAsset
   sliceId: tier3_smg
   reward: {fileID: 11400000, guid: 4c765f67f8db52440b327972d36fee5f, type: 2}
-  isSpecial: 1
   baseAmount: 1

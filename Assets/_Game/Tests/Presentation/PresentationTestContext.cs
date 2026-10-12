@@ -26,7 +26,7 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
             var configuration = new WheelConfiguration(
                 new SliceDefinition[] { coins, tickets, new BombSliceDefinition("bomb") },
                 new[] { coins, tickets, new RewardSliceDefinition("gems", new RewardDefinition("gems", 1), 1) },
-                new[] { coins, tickets, new RewardSliceDefinition("special", new RewardDefinition("special", 1), 1, true) });
+                new[] { coins, tickets, new RewardSliceDefinition("special", new RewardDefinition("special", 1), 1) });
 
             if (includeLucky)
             {
@@ -34,7 +34,7 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
                 configuration = new WheelConfiguration(
                     new SliceDefinition[] { coins, tickets, new LuckySliceDefinition("lucky"), new BombSliceDefinition("bomb") },
                     new[] { coins, tickets, gems, coins },
-                    new[] { coins, tickets, gems, new RewardSliceDefinition("special", new RewardDefinition("special", 1), 1, true) });
+                    new[] { coins, tickets, gems, new RewardSliceDefinition("special", new RewardDefinition("special", 1), 1) });
                 View.SliceCount = 4;
             }
 

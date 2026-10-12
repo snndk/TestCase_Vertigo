@@ -15,4 +15,3 @@ MonoBehaviour:
   sliceId: GoldSmall
   reward: {fileID: 11400000, guid: 1d6a2c03637aa874ab16065e4a88c876, type: 2}
   baseAmount: 10
-  isSpecial: 0

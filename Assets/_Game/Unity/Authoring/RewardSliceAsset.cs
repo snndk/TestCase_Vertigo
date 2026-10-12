@@ -10,7 +10,6 @@ namespace Vertigo.Unity._Game.Unity.Authoring
     {
         [SerializeField] private RewardAsset reward;
         [SerializeField, Min(1)] private long baseAmount = 1;
-        [SerializeField] private bool isSpecial;
         public RewardAsset Reward => reward;
         public override Sprite Icon => reward != null ? reward.Icon : null;
 
@@ -23,7 +22,7 @@ namespace Vertigo.Unity._Game.Unity.Authoring
         {
             if (reward == null)
                 throw new InvalidOperationException(name + " needs a reward asset.");
-            return new RewardSliceDefinition(Id, reward.CreateDefinition(), baseAmount, isSpecial);
+            return new RewardSliceDefinition(Id, reward.CreateDefinition(), baseAmount);
         }
 
         public override string GetCaption(SliceData slice)

@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Authoring.RewardSliceAsset
   sliceId: Super_chests
   reward: {fileID: 11400000, guid: f07d0a8dfc2f92949834b12157db3f9c, type: 2}
-  isSpecial: 1
   baseAmount: 1

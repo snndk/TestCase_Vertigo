@@ -96,13 +96,16 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
         }
 
         [Test]
-        public void GoldMustGuaranteeASpecialReward()
+        public void GoldAllowsAnEntirelyOptionalRewardPool()
         {
             var valid = Configuration(3, new[] { RewardEntry(10), RewardEntry(20), RewardEntry(30) });
             var gold = valid.GetCandidates(WheelTier.Gold).ToArray();
-            gold[2] = new WeightedSlice(gold[2].Definition, 99);
-            Assert.Throws<ArgumentException>(() => new WheelConfiguration(3,
-                valid.GetCandidates(WheelTier.Bronze), valid.GetCandidates(WheelTier.Silver), gold));
+            for (var index = 0; index < gold.Length; index++)
+                gold[index] = new WeightedSlice(gold[index].Definition, 1);
+            var configuration = new WheelConfiguration(3,
+                valid.GetCandidates(WheelTier.Bronze), valid.GetCandidates(WheelTier.Silver), gold);
+            var round = new RoundGenerator(configuration, new SequenceRandom()).Generate(30);
+            Assert.That(round.Slices.All(slice => slice is RewardSliceData), Is.True);
         }
 
         [Test]
@@ -117,7 +120,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             var configuration = new WheelConfiguration(3, bronze, valid.GetCandidates(WheelTier.Silver), valid.GetCandidates(WheelTier.Gold));
             var generator = new RoundGenerator(configuration, new SequenceRandom());
             Assert.That(generator.Generate(1).SourceIndices, Is.EqualTo(new[] { 0, 1, 2 }));
-            Assert.That(generator.Generate(30).Slices.OfType<RewardSliceData>().Any(slice => slice.IsSpecial), Is.True);
+            Assert.That(generator.Generate(30).Slices.All(slice => slice is RewardSliceData), Is.True);
         }
 
         [Test]
@@ -125,8 +128,8 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
         {
             var valid = Configuration(3, new[] { RewardEntry(100), RewardEntry(100), RewardEntry(100) });
             var bronze = valid.GetCandidates(WheelTier.Bronze).ToArray();
-            bronze[0] = new WeightedSlice(new RewardSliceDefinition("special-in-bronze",
-                new RewardDefinition("special", 1), 1), 100);
+            bronze[0] = new WeightedSlice(new RewardSliceDefinition("conflicting-growth",
+                new RewardDefinition("gold", 99), 10), 100);
             Assert.Throws<ArgumentException>(() => new WheelConfiguration(3, bronze,
                 valid.GetCandidates(WheelTier.Silver), valid.GetCandidates(WheelTier.Gold)));
         }
@@ -142,7 +145,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             return new WheelConfiguration(count,
                 rewards.Concat(new[] { new WeightedSlice(new BombSliceDefinition("bomb"), 100) }), silver,
                 rewards.Concat(new[] { new WeightedSlice(new RewardSliceDefinition("special",
-                    new RewardDefinition("special", 1), 1, true), 100) }));
+                    new RewardDefinition("special", 1), 1), 100) }));
         }
     }
 }

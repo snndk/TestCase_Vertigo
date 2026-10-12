@@ -24,7 +24,6 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.EditMode
             Assert.That(round.Tier, Is.EqualTo(tier));
             Assert.That(round.Slices.Count, Is.EqualTo(8));
             Assert.That(round.Slices.Count(slice => slice is BombSliceData), Is.EqualTo(bombs));
-            Assert.That(round.Slices.OfType<RewardSliceData>().Any(slice => slice.IsSpecial), Is.EqualTo(tier == WheelTier.Gold));
             for (var index = 0; index < round.Slices.Count; index++)
                 Assert.That(configuration.GetTier(tier).GetSlice(round.SourceIndices[index]).Id, Is.EqualTo(round.Slices[index].Id));
         }

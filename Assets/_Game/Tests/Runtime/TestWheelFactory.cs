@@ -26,7 +26,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
                 {
                     new RewardSliceDefinition("gold", gold, goldBaseAmount),
                     new RewardSliceDefinition("ticket", ticket, 2),
-                    new RewardSliceDefinition("special", new RewardDefinition("special", 1), 1, true)
+                    new RewardSliceDefinition("special", new RewardDefinition("special", 1), 1)
                 });
         }
     }
