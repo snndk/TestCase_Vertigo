@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using DG.Tweening;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -63,6 +64,47 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             foreach (var asset in m_ConfigurationAssets)
                 Object.DestroyImmediate(asset);
             m_ConfigurationAssets.Clear();
+        }
+
+        [UnityTest]
+        public IEnumerator RewardRowCountsOnlyNewArrivalsAndSettlesWhenDisabled()
+        {
+            var reward = AssetDatabase.LoadAssetAtPath<RewardAsset>("Assets/_Game/Settings/Rewards/Gold.asset");
+            var list = m_Root.GetComponentsInChildren<RewardListView>().First();
+            var row = list.Reserve(reward.Id);
+            row.Bind(reward.Id, reward, 100);
+            var amount = row.GetComponentsInChildren<TMP_Text>(true).Single(item => item.name.Contains("amount"));
+            var gain = row.GetComponentsInChildren<TMP_Text>(true).Single(item => item.name.Contains("gain"));
+            Assert.That(amount.text, Is.EqualTo("100"));
+            Assert.That(gain.gameObject.activeSelf, Is.False);
+            row.PrepareArrival(reward.Id, reward);
+            row.PulseArrival();
+            row.CreateArrivalCount(50, 0.35f);
+            Assert.That(amount.text, Is.EqualTo("100"));
+            Assert.That(gain.gameObject.activeSelf, Is.False);
+            yield return new WaitForSecondsRealtime(0.15f);
+            Assert.That(gain.text, Is.EqualTo("+50"));
+            Assert.That(long.Parse(amount.text), Is.InRange(101L, 149L));
+            row.gameObject.SetActive(false);
+            Assert.That(amount.text, Is.EqualTo("150"));
+            Assert.That(gain.gameObject.activeSelf, Is.False);
+            row.gameObject.SetActive(true);
+            row.Bind(reward.Id, reward, 150);
+            Assert.That(gain.gameObject.activeSelf, Is.False);
+            Assert.That(row.GetComponentsInChildren<Image>(true).Any(item => item.name.Contains("flash")), Is.False);
+        }
+
+        [UnityTest]
+        public IEnumerator RewardRowCountEndsAtTheExactLargeIntegerTotal()
+        {
+            var reward = AssetDatabase.LoadAssetAtPath<RewardAsset>("Assets/_Game/Settings/Rewards/Gold.asset");
+            var row = m_Root.GetComponentsInChildren<RewardListView>().First().Reserve(reward.Id);
+            row.Bind(reward.Id, reward, long.MaxValue - 100);
+            row.PrepareArrival(reward.Id, reward);
+            row.CreateArrivalCount(100, 0.35f);
+            yield return new WaitForSecondsRealtime(0.4f);
+            var amount = row.GetComponentsInChildren<TMP_Text>().Single(item => item.name.Contains("amount"));
+            Assert.That(amount.text, Is.EqualTo(long.MaxValue.ToString("N0")));
         }
 
         [Test]
