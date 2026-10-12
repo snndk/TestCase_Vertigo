@@ -3,7 +3,7 @@ using NUnit.Framework;
 using Vertigo.Runtime._Game.Runtime.Rewards;
 using Vertigo.Runtime._Game.Runtime.Wallet;
 
-namespace Vertigo.Tests.Runtime
+namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
 {
     public class ProgressServiceTests
     {

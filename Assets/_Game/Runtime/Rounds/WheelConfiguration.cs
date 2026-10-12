@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Vertigo.Runtime._Game.Runtime.Rules;
 using Vertigo.Runtime._Game.Runtime.Rewards;
+using Vertigo.Runtime._Game.Runtime.Rules;
 
 namespace Vertigo.Runtime._Game.Runtime.Rounds
 {

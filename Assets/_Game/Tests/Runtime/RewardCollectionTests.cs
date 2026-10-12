@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using Vertigo.Runtime._Game.Runtime.Rewards;
 
-namespace Vertigo.Tests.Runtime
+namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
 {
     public class RewardCollectionTests
     {

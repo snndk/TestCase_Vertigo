@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Vertigo.Runtime._Game.Runtime.Contracts;
 
-namespace Vertigo.Tests.Runtime
+namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
 {
     internal class SequenceRandom : IRandomSource
     {

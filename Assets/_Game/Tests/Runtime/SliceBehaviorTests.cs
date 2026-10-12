@@ -1,13 +1,13 @@
 using System;
 using System.Linq;
 using NUnit.Framework;
-using Vertigo.Runtime._Game.Runtime.Rounds;
 using Vertigo.Runtime._Game.Runtime.Rewards;
+using Vertigo.Runtime._Game.Runtime.Rounds;
 using Vertigo.Runtime._Game.Runtime.Rules;
 using Vertigo.Runtime._Game.Runtime.Session;
 using Vertigo.Runtime._Game.Runtime.Wallet;
 
-namespace Vertigo.Tests.Runtime
+namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
 {
     public class SliceBehaviorTests
     {

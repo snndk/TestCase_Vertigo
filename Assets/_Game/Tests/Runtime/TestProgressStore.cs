@@ -2,7 +2,7 @@ using System;
 using Vertigo.Runtime._Game.Runtime.Contracts;
 using Vertigo.Runtime._Game.Runtime.Rewards;
 
-namespace Vertigo.Tests.Runtime
+namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
 {
     internal class TestProgressStore : IProgressStore
     {

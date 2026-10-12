@@ -1,7 +1,7 @@
-using Vertigo.Runtime._Game.Runtime.Rounds;
 using Vertigo.Runtime._Game.Runtime.Rewards;
+using Vertigo.Runtime._Game.Runtime.Rounds;
 
-namespace Vertigo.Tests.Runtime
+namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
 {
     internal static class TestWheelFactory
     {
