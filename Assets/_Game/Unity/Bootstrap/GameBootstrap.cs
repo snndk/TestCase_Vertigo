@@ -1,10 +1,8 @@
 using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Vertigo.Presentation._Game.Presentation.GameScreen;
 using Vertigo.Presentation._Game.Presentation.Spin;
 using Vertigo.Runtime._Game.Runtime.Session;
-using Vertigo.Runtime._Game.Runtime.Rewards;
 using Vertigo.Runtime._Game.Runtime.Wallet;
 using Vertigo.Unity._Game.Unity.Authoring;
 using Vertigo.Unity._Game.Unity.Views;
@@ -14,26 +12,21 @@ namespace Vertigo.Unity._Game.Unity.Bootstrap
     [DefaultExecutionOrder(-100)]
     public class GameBootstrap : MonoBehaviour
     {
-        [SerializeField] private WheelConfigurationAsset configuration;
+        [SerializeField] private GameSettings settings;
         [SerializeField] private GameScreenView screen;
         [SerializeField, Min(1)] private float presentationTimeout = 10;
-        [SerializeField] private RewardAsset currency;
-        [FormerlySerializedAs("startingGold")]
-        [SerializeField, Min(0)] private long startingBalance = 250;
-        [SerializeField, Min(1)] private long reviveCost = 25;
         private GameScreenPresenter m_Presenter;
 
         private void Awake()
         {
             try
             {
-                if (configuration == null || screen == null || currency == null)
-                    throw new InvalidOperationException("Game configuration, screen and currency must be assigned.");
-                var progress = startingBalance == 0 ? RewardCollection.Empty :
-                    new RewardCollection(new[] { new Reward(currency.Id, startingBalance) });
-                var session = new GameSession(configuration.CreateRuntime(), new SystemRandomSource(),
-                    new InMemoryProgressStore(progress), new Reward(currency.Id, reviveCost));
-                screen.Initialize(configuration, currency);
+                if (settings == null || screen == null)
+                    throw new InvalidOperationException("Game settings and screen must be assigned.");
+                var progress = settings.CreateStartingRewards();
+                var session = new GameSession(settings.WheelConfiguration.CreateRuntime(), new SystemRandomSource(),
+                    new InMemoryProgressStore(progress), settings.CreateReviveCost(), settings.ReviveIncreasePercent);
+                screen.Initialize(settings.WheelConfiguration, settings.Currency);
                 m_Presenter = new GameScreenPresenter(session, screen, screen.Input,
                     new SpinPresentationSequence(screen.Wheel, TimeSpan.FromSeconds(presentationTimeout)));
             }
@@ -41,7 +34,7 @@ namespace Vertigo.Unity._Game.Unity.Bootstrap
             {
                 Debug.LogException(error, this);
                 if (screen != null)
-                    screen.ShowStartupError("Unable to start the game. Check the wheel configuration.");
+                    screen.ShowStartupError("Unable to start the game. Check the game settings.");
                 enabled = false;
             }
         }

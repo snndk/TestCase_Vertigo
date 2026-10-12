@@ -2396,12 +2396,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ac37d10d6f73144c9d0a699171dc14e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Bootstrap.GameBootstrap
-  configuration: {fileID: 11400000, guid: d326effbb3bdd4a44a6247d386f7d246, type: 2}
   screen: {fileID: 2377958637002528218}
   presentationTimeout: 10
-  currency: {fileID: 11400000, guid: 1d6a2c03637aa874ab16065e4a88c876, type: 2}
-  startingBalance: 250
-  reviveCost: 25
+  settings: {fileID: 11400000, guid: b6271fff7e3a4f12b46ce4f253d28375, type: 2}
 --- !u!1 &1450785040106149303
 GameObject:
   m_ObjectHideFlags: 0

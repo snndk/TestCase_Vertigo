@@ -166,27 +166,33 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
         }
 
         [Test]
-        public void BootstrapUsesTheSelectedCurrencyForStartingBalance()
+        public void BootstrapUsesGameSettingsCurrencyAndStartingBalance()
         {
-            var parent = new GameObject("Currency bootstrap test");
+            var parent = new GameObject("Settings bootstrap test");
             parent.SetActive(false);
+            var settings = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameSettings>("Assets/_Game/Settings/GameSettings.asset"));
             try
             {
                 var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Prefabs/ui_canvas_game.prefab");
                 var instance = Object.Instantiate(prefab, parent.transform);
                 var currency = AssetDatabase.LoadAssetAtPath<RewardAsset>("Assets/_Game/Settings/Rewards/Cash.asset");
+                var settingsData = new SerializedObject(settings);
+                settingsData.FindProperty("currency").objectReferenceValue = currency;
+                settingsData.FindProperty("startingBalance").longValue = 420;
+                settingsData.ApplyModifiedPropertiesWithoutUndo();
                 var data = new SerializedObject(instance.GetComponent<GameBootstrap>());
-                data.FindProperty("currency").objectReferenceValue = currency;
+                data.FindProperty("settings").objectReferenceValue = settings;
                 data.ApplyModifiedPropertiesWithoutUndo();
                 parent.SetActive(true);
                 var wallet = instance.GetComponentsInChildren<TMP_Text>(true).Single(item => item.name == "ui_text_wallet_amount_value");
-                Assert.That(wallet.text, Is.EqualTo("250"));
+                Assert.That(wallet.text, Is.EqualTo("420"));
                 var icon = instance.GetComponentsInChildren<Image>(true).Single(item => item.name == "ui_image_wallet_icon_value");
                 Assert.That(icon.sprite, Is.EqualTo(currency.Icon));
             }
             finally
             {
                 Object.DestroyImmediate(parent);
+                Object.DestroyImmediate(settings);
             }
         }
 

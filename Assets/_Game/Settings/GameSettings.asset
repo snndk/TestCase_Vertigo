@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 054dcc0f069b452cbda9d9b7aa845438, type: 3}
+  m_Name: GameSettings
+  m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Authoring.GameSettings
+  wheelConfiguration: {fileID: 11400000, guid: d326effbb3bdd4a44a6247d386f7d246, type: 2}
+  currency: {fileID: 11400000, guid: 1d6a2c03637aa874ab16065e4a88c876, type: 2}
+  startingBalance: 250
+  reviveEnabled: 1
+  initialReviveCost: 25
+  reviveIncreasePercent: 100

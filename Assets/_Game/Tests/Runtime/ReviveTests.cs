@@ -176,6 +176,30 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             Assert.That(m_Store.Writes, Is.Zero);
         }
 
+        [TestCase(0, 25, 25)]
+        [TestCase(50, 38, 57)]
+        [TestCase(100, 50, 100)]
+        [TestCase(200, 75, 225)]
+        public void ConfiguredPercentageControlsEverySuccessfulRevive(int percentage, long secondPrice, long thirdPrice)
+        {
+            m_Store.Progress = new RewardCollection(new[] { new Reward("gold", 1000) });
+            m_Session = new GameSession(TestWheelFactory.Create(), m_Random, m_Store, new Reward("gold", 25), percentage);
+            Spin(2);
+            Assert.That(m_Session.RequestRevive(), Is.EqualTo(CommandStatus.Accepted));
+            Assert.That(m_Session.GetSnapshot().ReviveCost.Amount, Is.EqualTo(secondPrice));
+            Spin(2);
+            Assert.That(m_Session.RequestRevive(), Is.EqualTo(CommandStatus.Accepted));
+            Assert.That(m_Session.GetSnapshot().ReviveCost.Amount, Is.EqualTo(thirdPrice));
+            Assert.That(m_Session.GetSnapshot().Progress.GetAmount("gold"), Is.EqualTo(1000 - 25 - secondPrice));
+        }
+
+        [Test]
+        public void NegativeReviveIncreaseIsRejected()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => new GameSession(TestWheelFactory.Create(),
+                m_Random, m_Store, new Reward("gold", 25), -1));
+        }
+
         private void Spin(int index)
         {
             m_Random.Enqueue(index);

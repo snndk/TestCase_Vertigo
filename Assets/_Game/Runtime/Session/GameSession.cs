@@ -13,6 +13,7 @@ namespace Vertigo.Runtime._Game.Runtime.Session
         private readonly SpinSelector m_Spins;
         private readonly ProgressService m_Progress;
         private readonly Reward m_InitialReviveCost;
+        private readonly int m_ReviveIncreasePercent;
         private Reward m_ReviveCost;
         private RewardCollection m_RecoverableLoot;
         private Guid m_RunId;
@@ -25,8 +26,12 @@ namespace Vertigo.Runtime._Game.Runtime.Session
         private CashOutResult m_LastCashOut;
         private AutomaticRun m_AutomaticRun;
 
-        public GameSession(WheelConfiguration configuration, IRandomSource random, IProgressStore store, Reward reviveCost = null)
+        public GameSession(WheelConfiguration configuration, IRandomSource random, IProgressStore store,
+            Reward reviveCost = null, int reviveIncreasePercent = 100)
         {
+            if (reviveIncreasePercent < 0)
+                throw new ArgumentOutOfRangeException(nameof(reviveIncreasePercent));
+            m_ReviveIncreasePercent = reviveIncreasePercent;
             m_Rounds = new RoundGenerator(configuration, random);
             m_Spins = new SpinSelector(random);
             m_Progress = new ProgressService(store);
@@ -178,7 +183,7 @@ namespace Vertigo.Runtime._Game.Runtime.Session
                 return CommandStatus.InsufficientFunds;
 
             // Prepare both values before charging; overflow or generation failure must not consume payment.
-            var nextCost = new Reward(m_ReviveCost.RewardId, checked(m_ReviveCost.Amount * 2));
+            var nextCost = GetNextReviveCost();
             var nextRound = m_Rounds.Generate(checked(m_Round.Zone + 1));
             m_Status = SessionStatus.Reviving;
             try
@@ -197,6 +202,14 @@ namespace Vertigo.Runtime._Game.Runtime.Session
                 if (m_Status == SessionStatus.Reviving)
                     m_Status = SessionStatus.AwaitingRevive;
             }
+        }
+
+        private Reward GetNextReviveCost()
+        {
+            // Currency uses whole units; round fractional increases up without losing long precision.
+            var multiplier = 1m + m_ReviveIncreasePercent / 100m;
+            var amount = checked((long)decimal.Ceiling(m_ReviveCost.Amount * multiplier));
+            return new Reward(m_ReviveCost.RewardId, amount);
         }
 
         public CommandStatus GiveUp()
