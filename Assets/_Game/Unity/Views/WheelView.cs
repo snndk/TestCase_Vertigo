@@ -74,15 +74,22 @@ namespace Vertigo.Unity._Game.Unity.Views
         public void Spin(SpinResult result, Action<VisualResult> completed)
         {
             tierTransition.Finish();
+            ResetAcceleration();
             m_IsSpinning = true;
-            m_SpinAccelerated = false;
-            m_RewardSpeed = 1f;
-            m_Outcome = null;
+            m_Operation.Play(CreateSpinTween(result.WinningIndex), status =>
+            {
+                m_IsSpinning = false;
+                completed(status);
+            });
+        }
+
+        private Tween CreateSpinTween(int winningIndex)
+        {
             var angle = motion.localEulerAngles.z;
-            var targetAngle = result.WinningIndex * 360f / SliceCount;
+            var targetAngle = winningIndex * 360f / SliceCount;
             var target = angle - revolutions * 360f - Mathf.Repeat(angle - targetAngle, 360f);
             var lastBoundary = Mathf.FloorToInt((-angle + 180f / SliceCount) / (360f / SliceCount));
-            m_Operation.Play(DOTween.To(() => angle, value =>
+            return DOTween.To(() => angle, value =>
             {
                 angle = value;
                 motion.localRotation = Quaternion.Euler(0, 0, value);
@@ -94,11 +101,7 @@ namespace Vertigo.Unity._Game.Unity.Views
                     lastBoundary = boundary;
                     pointer.Tick();
                 }
-            }, target, spinDuration).SetEase(Ease.OutQuart), status =>
-            {
-                m_IsSpinning = false;
-                completed(status);
-            });
+            }, target, spinDuration).SetEase(Ease.OutQuart);
         }
 
         public void Highlight(SpinResult result, Action<VisualResult> completed)
@@ -114,8 +117,7 @@ namespace Vertigo.Unity._Game.Unity.Views
             m_Operation.Play(outcome.Play(slices[result.WinningIndex]), status =>
             {
                 outcome.ResetVisuals();
-                m_Outcome = null;
-                m_RewardSpeed = 1f;
+                ResetAcceleration();
                 completed(status);
             });
             m_Operation.Accelerate(m_RewardSpeed);
@@ -149,10 +151,7 @@ namespace Vertigo.Unity._Game.Unity.Views
 
         public void Cancel()
         {
-            m_IsSpinning = false;
-            m_SpinAccelerated = false;
-            m_RewardSpeed = 1f;
-            m_Outcome = null;
+            ResetAcceleration();
             tierTransition.Finish();
             m_Operation.Cancel();
             pointer.ResetMotion();
@@ -160,6 +159,14 @@ namespace Vertigo.Unity._Game.Unity.Views
                 slice.ResetMotion();
             foreach (var outcome in outcomes)
                 outcome.ResetVisuals();
+        }
+
+        private void ResetAcceleration()
+        {
+            m_IsSpinning = false;
+            m_SpinAccelerated = false;
+            m_RewardSpeed = 1f;
+            m_Outcome = null;
         }
 
         private void OnDisable() => Cancel();

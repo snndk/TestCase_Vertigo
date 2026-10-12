@@ -18,6 +18,66 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
 {
     public class AnimationAccelerationTests : GameViewTestFixture
     {
+        [TestCase(true)]
+        [TestCase(false)]
+        public void FinishingAccelerationRemovesOnlyItsOwnUpdateCallbackBeforeStartingAnotherOperation(bool complete)
+        {
+            var operation = new TweenOperation();
+            var value = 0f;
+            TweenCallback originalUpdate = () => { };
+            var tween = DOTween.To(() => value, next => value = next, 1f, 4f)
+                .SetAutoKill(false).OnUpdate(originalUpdate).Pause();
+            var nextTween = DOTween.Sequence().AppendInterval(1f).Pause();
+            var callbacks = 0;
+            try
+            {
+                operation.Play(tween, result =>
+                {
+                    callbacks++;
+                    Assert.That(result.Status, Is.EqualTo(complete ? VisualStatus.Completed : VisualStatus.Cancelled));
+                    Assert.That(tween.onUpdate, Is.EqualTo(originalUpdate));
+                    Assert.That(operation.IsPlaying, Is.False);
+                    operation.Play(nextTween, next => { });
+                });
+                operation.Accelerate(16f, 1.8f);
+                operation.Accelerate(16f, 1.8f);
+                Assert.That(tween.onUpdate.GetInvocationList().Length, Is.EqualTo(2));
+                if (complete)
+                    tween.Complete(true);
+                else
+                    operation.Cancel();
+                Assert.That(callbacks, Is.EqualTo(1));
+                Assert.That(operation.IsPlaying, Is.True);
+                Assert.That(nextTween.timeScale, Is.EqualTo(1f));
+                Assert.That(nextTween.onUpdate, Is.Null);
+            }
+            finally
+            {
+                operation.Cancel();
+                tween.Kill(false);
+                nextTween.Kill(false);
+            }
+        }
+
+        [Test]
+        public void MissingCompletionCallbackDoesNotLeaveAnOperationRunning()
+        {
+            var operation = new TweenOperation();
+            var tween = DOTween.Sequence().AppendInterval(1f).Pause();
+            try
+            {
+                Assert.Throws<System.ArgumentNullException>(() => operation.Play(tween, null));
+                Assert.That(operation.IsPlaying, Is.False);
+                operation.Play(tween, result => { });
+                Assert.That(operation.IsPlaying, Is.True);
+            }
+            finally
+            {
+                operation.Cancel();
+                tween.Kill(false);
+            }
+        }
+
         [TestCase(0)]
         [TestCase(1)]
         [TestCase(2)]
