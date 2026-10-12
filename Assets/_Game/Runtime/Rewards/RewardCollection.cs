@@ -59,6 +59,22 @@ namespace Vertigo.Runtime._Game.Runtime.Rewards
             return new RewardCollection(combined);
         }
 
+        public RewardCollection Subtract(Reward cost)
+        {
+            if (cost == null)
+                throw new ArgumentNullException(nameof(cost));
+            if (GetAmount(cost.RewardId) < cost.Amount)
+                throw new InvalidOperationException("Not enough currency.");
+
+            var updated = new Dictionary<string, long>(m_Amounts, StringComparer.Ordinal);
+            var remaining = updated[cost.RewardId] - cost.Amount;
+            if (remaining == 0)
+                updated.Remove(cost.RewardId);
+            else
+                updated[cost.RewardId] = remaining;
+            return new RewardCollection(updated);
+        }
+
         private RewardCollection(Dictionary<string, long> ownedAmounts)
         {
             m_Amounts = new ReadOnlyDictionary<string, long>(ownedAmounts);

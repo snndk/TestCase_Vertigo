@@ -7,6 +7,7 @@ namespace Vertigo.Runtime._Game.Runtime.Session
         UnsafeZone,
         StaleOperation,
         RunNotFinished,
-        SaveFailed
+        SaveFailed,
+        InsufficientFunds
     }
 }

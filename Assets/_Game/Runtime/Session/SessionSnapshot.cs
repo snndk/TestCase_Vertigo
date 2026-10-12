@@ -14,11 +14,16 @@ namespace Vertigo.Runtime._Game.Runtime.Session
         public RewardCollection Progress { get; }
         public SpinResult PendingSpin { get; }
         public CashOutResult LastCashOut { get; }
+        public Reward ReviveCost { get; }
+        public RewardCollection RecoverableLoot { get; }
+        public bool CanRevive => Status == SessionStatus.AwaitingRevive && ReviveCost != null &&
+            Progress.GetAmount(ReviveCost.RewardId) >= ReviveCost.Amount;
         public bool CanSpin => Status == SessionStatus.Ready;
         public bool CanCashOut => CanSpin && ZoneRules.IsSafe(Round.Zone);
 
         internal SessionSnapshot(Guid runId, SessionStatus status, Round round,
-            RewardCollection runLoot, RewardCollection progress, SpinResult pendingSpin, CashOutResult lastCashOut)
+            RewardCollection runLoot, RewardCollection progress, SpinResult pendingSpin, CashOutResult lastCashOut,
+            Reward reviveCost = null, RewardCollection recoverableLoot = null)
         {
             RunId = runId;
             Status = status;
@@ -27,6 +32,8 @@ namespace Vertigo.Runtime._Game.Runtime.Session
             Progress = progress;
             PendingSpin = pendingSpin;
             LastCashOut = lastCashOut;
+            ReviveCost = reviveCost;
+            RecoverableLoot = recoverableLoot ?? RewardCollection.Empty;
         }
     }
 }

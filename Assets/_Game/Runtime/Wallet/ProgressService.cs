@@ -21,10 +21,18 @@ namespace Vertigo.Runtime._Game.Runtime.Wallet
         {
             if (rewards == null)
                 throw new ArgumentNullException(nameof(rewards));
+            return TryCommit(Rewards.Combine(rewards));
+        }
+
+        public bool TrySpend(Reward cost)
+        {
+            return TryCommit(Rewards.Subtract(cost));
+        }
+
+        private bool TryCommit(RewardCollection updated)
+        {
             if (m_IsWriting)
                 throw new InvalidOperationException("A progress write is already in progress.");
-
-            var updated = Rewards.Combine(rewards);
             m_IsWriting = true;
             try
             {
