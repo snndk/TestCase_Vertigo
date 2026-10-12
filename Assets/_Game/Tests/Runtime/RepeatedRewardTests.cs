@@ -11,10 +11,10 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
     public class RepeatedRewardTests
     {
         [TestCase(1, 10, 20)]
-        [TestCase(5, 14, 24)]
-        [TestCase(6, 15, 25)]
-        [TestCase(30, 39, 49)]
-        [TestCase(31, 40, 50)]
+        [TestCase(5, 54, 64)]
+        [TestCase(6, 65, 75)]
+        [TestCase(30, 329, 339)]
+        [TestCase(31, 340, 350)]
         public void SameRewardHasIndependentAmountsAndSharedGrowth(int zone, long first, long second)
         {
             var round = new RoundGenerator(CreateConfiguration(), new SequenceRandom()).Generate(zone);
@@ -40,7 +40,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
         public void WinningSlotDeterminesAmountAndCashOutCombinesTheRewardIdentity()
         {
             var session = new GameSession(CreateConfiguration(), CreateRandom(0, 1, 0, 1), new InMemoryProgressStore());
-            var expected = new long[] { 10, 21, 12, 23 };
+            var expected = new long[] { 10, 31, 32, 53 };
             for (var index = 0; index < expected.Length; index++)
             {
                 var spin = session.RequestSpin().Result;
@@ -50,7 +50,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             }
             Assert.That(session.RequestCashOut().Status, Is.EqualTo(CommandStatus.Accepted));
             Assert.That(session.GetSnapshot().Progress.Amounts.Count, Is.EqualTo(1));
-            Assert.That(session.GetSnapshot().Progress.GetAmount("gold"), Is.EqualTo(66));
+            Assert.That(session.GetSnapshot().Progress.GetAmount("gold"), Is.EqualTo(126));
         }
 
         [TestCase(0)]
@@ -78,7 +78,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
 
         private static WheelConfiguration CreateConfiguration()
         {
-            var reward = new RewardDefinition("gold", 1);
+            var reward = new RewardDefinition("gold", 11);
             var small = new RewardSliceDefinition("gold", reward, 10);
             var large = new RewardSliceDefinition("gold", reward, 20);
             var special = new RewardSliceDefinition("special", new RewardDefinition("special", 1), 1, true);

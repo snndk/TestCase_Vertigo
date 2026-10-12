@@ -15,4 +15,4 @@ MonoBehaviour:
   rewardId: Gold
   displayName: Gold
   icon: {fileID: 21300000, guid: c994b0e4a1987844aaec64ab20ecf3d5, type: 3}
-  increasePerZone: 2
+  increasePerZone: 11

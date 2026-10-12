@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Vertigo.Runtime._Game.Runtime.Rewards;
 using Vertigo.Runtime._Game.Runtime.Rules;
 
 namespace Vertigo.Runtime._Game.Runtime.Rounds
@@ -9,7 +8,6 @@ namespace Vertigo.Runtime._Game.Runtime.Rounds
     {
         internal static void Validate(WheelConfiguration configuration)
         {
-            var rewards = new Dictionary<string, RewardDefinition>(StringComparer.Ordinal);
             var ordinaryRewards = new HashSet<string>(StringComparer.Ordinal);
             var specialRewards = new HashSet<string>(StringComparer.Ordinal);
             foreach (WheelTier tier in Enum.GetValues(typeof(WheelTier)))
@@ -22,10 +20,6 @@ namespace Vertigo.Runtime._Game.Runtime.Rounds
                     if (candidate.Weight == 0 || !(candidate.Definition is RewardSliceDefinition slice))
                         continue;
                     var reward = slice.Reward;
-                    if (rewards.TryGetValue(reward.Id, out var existing) &&
-                        existing.IncreasePerZone != reward.IncreasePerZone)
-                        throw new ArgumentException("All active tiers must share the same growth policy for reward " + reward.Id + ".");
-                    rewards[reward.Id] = reward;
                     if (tier != WheelTier.Gold)
                         ordinaryRewards.Add(reward.Id);
                     if (slice.IsSpecial)
@@ -34,6 +28,7 @@ namespace Vertigo.Runtime._Game.Runtime.Rounds
             }
             if (ordinaryRewards.Overlaps(specialRewards))
                 throw new ArgumentException("Special gold rewards must be exclusive to the gold wheel.");
+            RewardGrowthValidator.Validate(configuration);
         }
 
         private static void ValidateTier(IReadOnlyList<WeightedSlice> candidates, WheelTier tier, int sliceCount)

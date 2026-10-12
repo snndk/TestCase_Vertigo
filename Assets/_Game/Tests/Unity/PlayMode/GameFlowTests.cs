@@ -11,6 +11,7 @@ using UnityEngine.UI;
 using Vertigo.Presentation._Game.Presentation.GameScreen;
 using Vertigo.Presentation._Game.Presentation.Spin;
 using Vertigo.Runtime._Game.Runtime.Rewards;
+using Vertigo.Runtime._Game.Runtime.Rounds;
 using Vertigo.Runtime._Game.Runtime.Rules;
 using Vertigo.Runtime._Game.Runtime.Session;
 using Vertigo.Runtime._Game.Runtime.Wallet;
@@ -79,7 +80,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             Assert.That(Session.GetSnapshot().Round.Zone, Is.EqualTo(2));
             yield return SpinAndWait();
             Assert.That(Session.GetSnapshot().Round.Zone, Is.EqualTo(3));
-            Assert.That(Session.GetSnapshot().RunLoot.GetAmount("Gold"), Is.EqualTo(22));
+            Assert.That(Session.GetSnapshot().RunLoot.GetAmount("Gold"), Is.EqualTo(31));
         }
 
         [UnityTest]
@@ -227,15 +228,21 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
                 Assert.That(views[1].GetComponentInChildren<TMP_Text>().text, Is.EqualTo("x20"));
                 Assert.That(views[2].GetComponentInChildren<TMP_Text>().text, Is.EqualTo("x10"));
                 Assert.That(views[1].Icon, Is.EqualTo(views[0].Icon));
+                var previousAmount = 0L;
                 foreach (var index in new[] { 1, 2, 0, 0 })
                 {
+                    var reward = ((RewardSliceData)Session.GetSnapshot().Round.Slices[index]).Reward;
+                    Assert.That(reward.Amount, Is.GreaterThan(previousAmount));
+                    Assert.That(views[index].GetComponentInChildren<TMP_Text>().text,
+                        Is.EqualTo("x" + reward.Amount.ToString("N0")));
+                    previousAmount = reward.Amount;
                     Random.Index = index;
                     yield return SpinAndWait();
                 }
-                Assert.That(Session.GetSnapshot().RunLoot.GetAmount("Gold"), Is.EqualTo(62));
+                Assert.That(Session.GetSnapshot().RunLoot.GetAmount("Gold"), Is.EqualTo(116));
                 Button("cashout").onClick.Invoke();
                 Assert.That(Session.GetSnapshot().Progress.Amounts.Count, Is.EqualTo(1));
-                Assert.That(Text("wallet_amount"), Is.EqualTo("62"));
+                Assert.That(Text("wallet_amount"), Is.EqualTo("116"));
                 Assert.That(source.GetTier(WheelTier.Bronze).GetSlice(1).Id, Is.EqualTo("Cash"));
             }
             finally
@@ -286,7 +293,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
                 for (var index = 0; index < views.Length; index++)
                 {
                     Assert.That(views[index].Icon, Is.EqualTo(index % 2 == 0 ? cash.Icon : large.Icon));
-                    Assert.That(views[index].GetComponentInChildren<TMP_Text>().text, Is.EqualTo(index % 2 == 0 ? "x180" : "x28"));
+                    Assert.That(views[index].GetComponentInChildren<TMP_Text>().text, Is.EqualTo(index % 2 == 0 ? "x180" : "x64"));
                 }
                 yield return SpinAndWait();
                 Assert.That(Session.GetSnapshot().RunLoot.GetAmount("Cash"), Is.EqualTo(180));
