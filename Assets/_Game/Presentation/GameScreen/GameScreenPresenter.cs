@@ -14,8 +14,9 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
         private RewardCollection m_DisplayedLoot;
         private PresentationError m_Error;
         private bool m_IsAttached;
-        private bool m_IsHandlingInput;
+        private bool m_IsHandlingAction;
         private bool m_IsRendering;
+        private bool m_AutomaticSpinPaused;
         private long m_BindingVersion;
 
         public GameScreenPresenter(GameSession session, IGameScreenView view, SpinPresentationSequence spin)
@@ -85,30 +86,57 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
         public void AdvancePresentation(TimeSpan elapsed)
         {
             m_Spin.Advance(elapsed);
+            // Schedule at most one automatic spin per tick, even with synchronous views.
+            if (!m_AutomaticSpinPaused && m_Session.GetSnapshot().CanAutomaticSpin)
+                HandleAction(RequestAutomaticSpin);
         }
 
         private void OnSpinRequested()
         {
-            HandleInput(() =>
-            {
-                var response = m_Session.RequestSpin();
-                if (response.Status != CommandStatus.Accepted)
-                    return;
+            if (m_AutomaticSpinPaused && m_Session.GetSnapshot().CanAutomaticSpin)
+                HandleAction(RequestAutomaticSpin);
+            else
+                HandleInput(() => PresentSpin(m_Session.RequestSpin()));
+        }
 
-                m_Error = null;
-                var binding = m_BindingVersion;
-                try
-                {
-                    Render();
-                    if (m_IsAttached && binding == m_BindingVersion)
-                        m_Spin.Play(response.Result, result => FinishSpin(response.Result.OperationId, result));
-                }
-                catch
-                {
-                    m_Session.CompleteResolution(response.Result.OperationId);
-                    throw;
-                }
-            });
+        private void RequestAutomaticSpin()
+        {
+            SpinResponse response;
+            try
+            {
+                response = m_Session.RequestAutomaticSpin();
+            }
+            catch (Exception error)
+            {
+                // A preparation failure keeps the runtime plan intact, but must not retry every frame.
+                m_AutomaticSpinPaused = true;
+                m_Error = new PresentationError("Automatic play paused. Tap SPIN to retry.", error);
+                Synchronize();
+                return;
+            }
+
+            m_AutomaticSpinPaused = false;
+            PresentSpin(response);
+        }
+
+        private void PresentSpin(SpinResponse response)
+        {
+            if (response.Status != CommandStatus.Accepted)
+                return;
+
+            m_Error = null;
+            var binding = m_BindingVersion;
+            try
+            {
+                Render();
+                if (m_IsAttached && binding == m_BindingVersion)
+                    m_Spin.Play(response.Result, result => FinishSpin(response.Result.OperationId, result));
+            }
+            catch
+            {
+                m_Session.CompleteResolution(response.Result.OperationId);
+                throw;
+            }
         }
 
         private void OnCashOutRequested()
@@ -170,10 +198,16 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
 
         private void HandleInput(Action action)
         {
-            if (!m_IsAttached || m_IsHandlingInput || m_IsRendering)
+            if (!m_Session.GetSnapshot().InputBlocked)
+                HandleAction(action);
+        }
+
+        private void HandleAction(Action action)
+        {
+            if (!m_IsAttached || m_IsHandlingAction || m_IsRendering)
                 return;
 
-            m_IsHandlingInput = true;
+            m_IsHandlingAction = true;
             try
             {
                 action();
@@ -185,7 +219,7 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
             }
             finally
             {
-                m_IsHandlingInput = false;
+                m_IsHandlingAction = false;
             }
         }
 
@@ -212,7 +246,7 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
             m_IsRendering = true;
             try
             {
-                m_View.Render(new GameScreenState(m_Session.GetSnapshot(), m_DisplayedLoot, m_Error));
+                m_View.Render(new GameScreenState(m_Session.GetSnapshot(), m_DisplayedLoot, m_Error, m_AutomaticSpinPaused));
             }
             finally
             {

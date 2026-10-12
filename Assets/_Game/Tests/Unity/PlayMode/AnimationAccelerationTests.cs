@@ -137,7 +137,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
 
             var row = Root.GetComponentInChildren<RewardRowView>();
             var amount = row.GetComponentsInChildren<TMP_Text>().Single(text => text.name.Contains("amount"));
-            var reward = ((RewardSlice)result.WinningSlice).Reward;
+            var reward = ((RewardSliceData)result.WinningSlice).Reward;
             flight.SetUpdate(UpdateType.Manual);
             DOTween.ManualUpdate(.11f, .11f);
             Assert.That(amount.text, Is.EqualTo("0"));
@@ -196,7 +196,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             Assert.That(View.Wheel.CanAccelerate, Is.False);
             Random.Index = 7;
             var result = Session.RequestSpin().Result;
-            Assert.That(result.WinningSlice, Is.TypeOf<BombSlice>());
+            Assert.That(result.WinningSlice, Is.TypeOf<BombSliceData>());
             View.Wheel.Spin(result, status => { });
             Assert.That(tap.IsRaycastLocationValid(Vector2.zero, null), Is.True);
             View.Wheel.Cancel();

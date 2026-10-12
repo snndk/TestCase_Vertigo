@@ -13,35 +13,44 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
     {
         [TestCase("gold")]
         [TestCase("cash")]
-        public void RewardSliceAddsItsRewardWithoutMutatingTheInput(string rewardId)
+        public void RewardSliceAddsThroughContextWithoutMutatingEarlierLoot(string rewardId)
         {
-            var loot = new RewardCollection(new[] { new Reward(rewardId, 3) });
-            RoundSlice slice = new RewardSlice("reward", new Reward(rewardId, 7));
-
-            var result = slice.Resolve(loot);
-
-            Assert.That(result.Loot.GetAmount(rewardId), Is.EqualTo(10));
-            Assert.That(loot.GetAmount(rewardId), Is.EqualTo(3));
-            Assert.That(result.ContinuesRun, Is.True);
+            RewardCollection previous = null;
+            var session = SliceContextTestFactory.Create(context =>
+            {
+                context.AddReward(new Reward(rewardId, 3));
+                previous = context.Loot;
+                new RewardSlice(context, new Reward(rewardId, 7)).Resolve();
+            });
+            var spin = session.RequestSpin().Result;
+            Assert.That(session.GetSnapshot().RunLoot.GetAmount(rewardId), Is.EqualTo(10));
+            Assert.That(previous.GetAmount(rewardId), Is.EqualTo(3));
+            session.CompleteResolution(spin.OperationId);
+            Assert.That(session.GetSnapshot().Round.Zone, Is.EqualTo(2));
         }
 
         [Test]
-        public void BombSliceProducesLossWithoutChangingTheInputLoot()
+        public void BombSliceLosesThroughContextWithoutMutatingEarlierLoot()
         {
-            var loot = new RewardCollection(new[] { new Reward("gold", 3), new Reward("cash", 5) });
-            RoundSlice slice = new BombSlice("bomb");
-
-            var result = slice.Resolve(loot);
-
-            Assert.That(result.Loot.Amounts, Is.Empty);
-            Assert.That(result.ContinuesRun, Is.False);
-            Assert.That(loot.Amounts.Count, Is.EqualTo(2));
+            RewardCollection previous = null;
+            var session = SliceContextTestFactory.Create(context =>
+            {
+                context.AddReward(new Reward("gold", 3));
+                context.AddReward(new Reward("cash", 5));
+                previous = context.Loot;
+                new BombSlice(context).Resolve();
+            });
+            var spin = session.RequestSpin().Result;
+            Assert.That(session.GetSnapshot().RunLoot.Amounts, Is.Empty);
+            Assert.That(previous.Amounts.Count, Is.EqualTo(2));
+            session.CompleteResolution(spin.OperationId);
+            Assert.That(session.GetSnapshot().Status, Is.EqualTo(SessionStatus.Lost));
         }
 
         [Test]
-        public void RewardSliceCannotRepresentBombByAcceptingNullReward()
+        public void RewardDataCannotRepresentBombByAcceptingNullReward()
         {
-            Assert.Throws<ArgumentNullException>(() => new RewardSlice("reward", null));
+            Assert.Throws<ArgumentNullException>(() => new RewardSliceData("reward", null));
         }
 
         [Test]

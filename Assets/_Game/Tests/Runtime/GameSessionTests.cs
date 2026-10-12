@@ -333,7 +333,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             m_Session = new GameSession(TestWheelFactory.Create(long.MaxValue), m_Random, m_Store);
             var bomb = SpinAndComplete(2);
 
-            Assert.That(bomb.WinningSlice, Is.TypeOf<BombSlice>());
+            Assert.That(bomb.WinningSlice, Is.TypeOf<BombSliceData>());
             Assert.That(m_Session.GetSnapshot().Status, Is.EqualTo(SessionStatus.Lost));
             Assert.That(m_Session.StartNewRun(), Is.EqualTo(CommandStatus.Accepted));
         }

@@ -6,7 +6,7 @@ namespace Vertigo.Runtime._Game.Runtime.Rounds
 {
     internal static class RoundValidator
     {
-        internal static void Validate(WheelConfiguration configuration, int zone, IReadOnlyList<RoundSlice> slices, IReadOnlyList<int> sourceIndices)
+        internal static void Validate(WheelConfiguration configuration, int zone, IReadOnlyList<SliceData> slices, IReadOnlyList<int> sourceIndices)
         {
             var tier = ZoneRules.GetTier(zone);
             var bombCount = 0;
@@ -28,9 +28,9 @@ namespace Vertigo.Runtime._Game.Runtime.Rounds
                 if (slice == null || slice.Id != definition.Id)
                     throw new InvalidOperationException("Generated slice IDs must match their definitions.");
 
-                if (slice is BombSlice)
+                if (slice is BombSliceData)
                     bombCount++;
-                if (slice is RewardSlice reward)
+                if (slice is RewardSliceData reward)
                 {
                     rewardCount++;
                     if (reward.IsSpecial)

@@ -11,12 +11,12 @@ namespace Vertigo.Unity._Game.Unity.Views
 
         public bool IsRaycastLocationValid(Vector2 screenPoint, Camera eventCamera)
         {
-            return isActiveAndEnabled && wheel != null && wheel.CanAccelerate;
+            return isActiveAndEnabled && wheel != null && (wheel.InputBlocked || wheel.CanAccelerate);
         }
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (eventData.button == PointerEventData.InputButton.Left)
+            if (wheel != null && !wheel.InputBlocked && eventData.button == PointerEventData.InputButton.Left)
                 wheel.Accelerate();
         }
     }

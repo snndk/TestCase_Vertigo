@@ -20,9 +20,9 @@ namespace Vertigo.Runtime._Game.Runtime.Session
         private Round m_Round;
         private RewardCollection m_RunLoot;
         private SpinResult m_PendingSpin;
-        private SliceResolution m_PendingResolution;
-        private Round m_PreparedNextRound;
+        private SliceContext m_PendingContext;
         private CashOutResult m_LastCashOut;
+        private AutomaticRun m_AutomaticRun;
 
         public GameSession(WheelConfiguration configuration, IRandomSource random, IProgressStore store, Reward reviveCost = null)
         {
@@ -36,28 +36,78 @@ namespace Vertigo.Runtime._Game.Runtime.Session
         public SessionSnapshot GetSnapshot()
         {
             return new SessionSnapshot(m_RunId, m_Status, m_Round, m_RunLoot, m_Progress.Rewards,
-                m_PendingSpin, m_LastCashOut, m_ReviveCost, m_RecoverableLoot);
+                m_PendingSpin, m_LastCashOut, m_ReviveCost, m_RecoverableLoot, m_AutomaticRun?.Snapshot);
         }
 
         public SpinResponse RequestSpin()
         {
+            if (m_AutomaticRun != null)
+                return SpinResponse.Reject(CommandStatus.NotReady);
+            return StartSpin(false);
+        }
+
+        public SpinResponse RequestAutomaticSpin()
+        {
+            if (m_AutomaticRun == null)
+                return SpinResponse.Reject(CommandStatus.NotReady);
+            return StartSpin(true);
+        }
+
+        private SpinResponse StartSpin(bool automatic)
+        {
             if (m_Status != SessionStatus.Ready)
                 return SpinResponse.Reject(CommandStatus.NotReady);
 
-            var winningIndex = m_Spins.SelectSlice(m_Round);
-            var winner = m_Round.Slices[winningIndex];
-            // Resolve and prepare the transition before committing any session state.
-            var resolution = winner.Resolve(m_RunLoot);
-            var nextRound = resolution.ContinuesRun ? m_Rounds.Generate(checked(m_Round.Zone + 1)) : m_Round;
-            var nextSequence = checked(m_OperationSequence + 1);
-            var result = new SpinResult(new OperationId(m_RunId, nextSequence), m_Round, winningIndex);
+            // Reject reentrant commands while a behavior prepares its local transaction.
+            m_Status = SessionStatus.PreparingSpin;
+            try
+            {
+                return PrepareSpin(automatic);
+            }
+            finally
+            {
+                if (m_Status == SessionStatus.PreparingSpin)
+                    m_Status = SessionStatus.Ready;
+            }
+        }
 
-            m_RecoverableLoot = !resolution.ContinuesRun && m_ReviveCost != null ? m_RunLoot : RewardCollection.Empty;
-            m_RunLoot = resolution.Loot;
+        private SpinResponse PrepareSpin(bool automatic)
+        {
+            Predicate<SliceData> eligible = null;
+            if (m_AutomaticRun != null)
+                eligible = m_AutomaticRun.CanSelect;
+            var winningIndex = m_Spins.SelectSlice(m_Round, eligible);
+            var context = ResolveWinner(winningIndex);
+            return CommitSpin(winningIndex, automatic, context);
+        }
+
+        private SliceContext ResolveWinner(int winningIndex)
+        {
+            var context = new SliceContext(m_Rounds, m_Round, m_RunLoot, m_AutomaticRun);
+            try
+            {
+                var winner = m_Rounds.CreateBehavior(m_Round, winningIndex, context);
+                winner.Resolve();
+                context.ValidateComplete();
+            }
+            finally
+            {
+                // Escaped behavior/context references cannot write after success or failure.
+                context.Close();
+            }
+
+            return context;
+        }
+
+        private SpinResponse CommitSpin(int winningIndex, bool automatic, SliceContext context)
+        {
+            var nextSequence = checked(m_OperationSequence + 1);
+            var result = new SpinResult(new OperationId(m_RunId, nextSequence), m_Round, winningIndex, automatic);
+            m_RecoverableLoot = !context.ContinuesRun && m_ReviveCost != null ? m_RunLoot : RewardCollection.Empty;
+            m_RunLoot = context.Loot;
             m_OperationSequence = nextSequence;
             m_PendingSpin = result;
-            m_PendingResolution = resolution;
-            m_PreparedNextRound = nextRound;
+            m_PendingContext = context;
             m_Status = SessionStatus.Resolving;
             return SpinResponse.Accept(result);
         }
@@ -68,19 +118,21 @@ namespace Vertigo.Runtime._Game.Runtime.Session
                 !m_PendingSpin.OperationId.Equals(operationId))
                 return CommandStatus.StaleOperation;
 
-            m_Round = m_PreparedNextRound;
-            m_Status = m_PendingResolution.ContinuesRun ? SessionStatus.Ready : SessionStatus.Lost;
+            m_Round = m_PendingContext.NextRound;
+            m_AutomaticRun = m_PendingContext.AutomaticRun;
+            m_Status = m_PendingContext.ContinuesRun ? SessionStatus.Ready : SessionStatus.Lost;
             if (m_Status == SessionStatus.Lost && m_ReviveCost != null)
                 m_Status = SessionStatus.AwaitingRevive;
 
             m_PendingSpin = null;
-            m_PendingResolution = null;
-            m_PreparedNextRound = null;
+            m_PendingContext = null;
             return CommandStatus.Accepted;
         }
 
         public CashOutResponse RequestCashOut()
         {
+            if (m_AutomaticRun != null)
+                return CashOutResponse.Reject(CommandStatus.NotReady);
             if (m_Status != SessionStatus.Ready)
                 return CashOutResponse.Reject(CommandStatus.NotReady);
             if (!ZoneRules.IsSafe(m_Round.Zone))
@@ -94,6 +146,7 @@ namespace Vertigo.Runtime._Game.Runtime.Session
                 if (!m_Progress.TryCollect(m_RunLoot))
                     return CashOutResponse.Reject(CommandStatus.SaveFailed);
 
+                m_AutomaticRun = null;
                 m_LastCashOut = result;
                 m_RunLoot = RewardCollection.Empty;
                 m_Status = SessionStatus.CashedOut;
@@ -161,9 +214,9 @@ namespace Vertigo.Runtime._Game.Runtime.Session
             m_RunLoot = RewardCollection.Empty;
             m_RecoverableLoot = RewardCollection.Empty;
             m_PendingSpin = null;
-            m_PendingResolution = null;
-            m_PreparedNextRound = null;
+            m_PendingContext = null;
             m_LastCashOut = null;
+            m_AutomaticRun = null;
             m_Status = SessionStatus.Ready;
         }
     }

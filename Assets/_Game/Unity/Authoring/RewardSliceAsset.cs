@@ -26,9 +26,9 @@ namespace Vertigo.Unity._Game.Unity.Authoring
             return new RewardSliceDefinition(Id, reward.CreateDefinition(), baseAmount, isSpecial);
         }
 
-        public override string GetCaption(RoundSlice slice)
+        public override string GetCaption(SliceData slice)
         {
-            return "x" + ((RewardSlice)slice).Reward.Amount.ToString("N0");
+            return "x" + ((RewardSliceData)slice).Reward.Amount.ToString("N0");
         }
     }
 }

@@ -15,8 +15,8 @@ namespace Vertigo.Unity._Game.Unity.Views
         public RectTransform Motion => motion;
         public Sprite Icon => icon.sprite;
         public RectTransform IconRect => icon.rectTransform;
-        public RoundSlice Slice { get; private set; }
-        public void Bind(RoundSlice slice, SliceAsset visual)
+        public SliceData Slice { get; private set; }
+        public void Bind(SliceData slice, SliceAsset visual)
         {
             Slice = slice;
             icon.sprite = visual.Icon;

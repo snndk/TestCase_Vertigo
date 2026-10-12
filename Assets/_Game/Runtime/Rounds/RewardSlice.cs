@@ -5,19 +5,17 @@ namespace Vertigo.Runtime._Game.Runtime.Rounds
 {
     public class RewardSlice : RoundSlice
     {
-        public Reward Reward { get; }
-        public bool IsSpecial { get; }
+        private readonly Reward m_Reward;
 
-        public RewardSlice(string id, Reward reward, bool isSpecial = false) : base(id)
+        public RewardSlice(SliceContext context, Reward reward) : base(context)
         {
-            Reward = reward ?? throw new ArgumentNullException(nameof(reward));
-            IsSpecial = isSpecial;
+            m_Reward = reward ?? throw new ArgumentNullException(nameof(reward));
         }
 
-        protected override SliceResolution ResolveCore(RewardCollection loot)
+        protected override void ResolveCore()
         {
-            var updatedLoot = loot.Add(Reward);
-            return SliceResolution.ContinueWith(updatedLoot);
+            Context.AddReward(m_Reward);
+            Context.ContinueToNextRound();
         }
     }
 }

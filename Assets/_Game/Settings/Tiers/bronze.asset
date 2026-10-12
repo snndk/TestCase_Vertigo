@@ -57,3 +57,5 @@ MonoBehaviour:
     weight: 50
   - slice: {fileID: 11400000, guid: 5b6cca2274c579e459c2efff476d2031, type: 2}
     weight: 50
+  - slice: {fileID: 11400000, guid: 79c87f79eee6e8b4e9b10e98d87e6f87, type: 2}
+    weight: 10

@@ -35,9 +35,9 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
         public void SharedRewardGrowsAcrossTierTransitions(int fromZone, int toZone)
         {
             var generator = new RoundGenerator(TestWheelFactory.Create(), new SequenceRandom());
-            var before = generator.Generate(fromZone).Slices.OfType<RewardSlice>()
+            var before = generator.Generate(fromZone).Slices.OfType<RewardSliceData>()
                 .Single(slice => slice.Reward.RewardId == "gold").Reward;
-            var after = generator.Generate(toZone).Slices.OfType<RewardSlice>()
+            var after = generator.Generate(toZone).Slices.OfType<RewardSliceData>()
                 .Single(slice => slice.Reward.RewardId == "gold").Reward;
 
             Assert.That(before.Amount, Is.EqualTo(10 + fromZone - 1));
@@ -69,8 +69,8 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
         {
             var round = new RoundGenerator(TestWheelFactory.Create(), new SequenceRandom()).Generate(zone);
             Assert.That(round.Tier, Is.EqualTo(expected));
-            Assert.That(round.Slices.OfType<BombSlice>().Count(), Is.EqualTo(expected == WheelTier.Bronze ? 1 : 0));
-            Assert.That(round.Slices.OfType<RewardSlice>().Any(s => s.IsSpecial), Is.EqualTo(expected == WheelTier.Gold));
+            Assert.That(round.Slices.OfType<BombSliceData>().Count(), Is.EqualTo(expected == WheelTier.Bronze ? 1 : 0));
+            Assert.That(round.Slices.OfType<RewardSliceData>().Any(s => s.IsSpecial), Is.EqualTo(expected == WheelTier.Gold));
         }
 
         [Test]
@@ -83,8 +83,8 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
                 var later = generator.Generate(zones[1]);
                 for (var index = 0; index < first.Slices.Count; index++)
                 {
-                    if (first.Slices[index] is RewardSlice firstReward)
-                        Assert.That(((RewardSlice)later.Slices[index]).Reward.Amount, Is.GreaterThan(firstReward.Reward.Amount));
+                    if (first.Slices[index] is RewardSliceData firstReward)
+                        Assert.That(((RewardSliceData)later.Slices[index]).Reward.Amount, Is.GreaterThan(firstReward.Reward.Amount));
                 }
             }
         }
@@ -115,7 +115,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             var slices = (IList<SliceDefinition>)config.GetSlices(WheelTier.Bronze);
             Assert.Throws<NotSupportedException>(() => slices[0] = bronze[0]);
             var round = new RoundGenerator(config, new SequenceRandom()).Generate(1);
-            Assert.Throws<NotSupportedException>(() => ((IList<RoundSlice>)round.Slices).Clear());
+            Assert.Throws<NotSupportedException>(() => ((IList<SliceData>)round.Slices).Clear());
 
             var rewards = new[] { new Reward("gold", 5) };
             var collection = new RewardCollection(rewards);

@@ -30,6 +30,7 @@ namespace Vertigo.Unity._Game.Unity.Views
         private bool m_SpinAccelerated;
         private float m_RewardSpeed = 1f;
         private SliceOutcomeView m_Outcome;
+        public bool InputBlocked { get; private set; }
         public int SliceCount => slices.Length;
         public float Rotation => motion.localEulerAngles.z;
         public bool CanAccelerate => m_Operation.IsPlaying &&
@@ -40,6 +41,11 @@ namespace Vertigo.Unity._Game.Unity.Views
             m_Configuration = configuration;
             foreach (var outcome in outcomes)
                 outcome.ResetVisuals();
+        }
+
+        public void SetInputBlocked(bool blocked)
+        {
+            InputBlocked = blocked;
         }
 
         public void Bind(Round round)
@@ -81,6 +87,8 @@ namespace Vertigo.Unity._Game.Unity.Views
                 m_IsSpinning = false;
                 completed(status);
             });
+            if (result.IsAutomatic)
+                Accelerate();
         }
 
         private Tween CreateSpinTween(int winningIndex)
@@ -109,6 +117,8 @@ namespace Vertigo.Unity._Game.Unity.Views
             var outcome = FindOutcome(result.WinningSlice);
             m_Outcome = outcome;
             m_Operation.Play(outcome.Highlight(slices[result.WinningIndex]), completed);
+            if (result.IsAutomatic)
+                Accelerate();
         }
 
         public void PlayOutcome(SpinResult result, Action<VisualResult> completed)
@@ -141,7 +151,7 @@ namespace Vertigo.Unity._Game.Unity.Views
             m_Operation.Accelerate(m_RewardSpeed);
         }
 
-        private SliceOutcomeView FindOutcome(RoundSlice slice)
+        private SliceOutcomeView FindOutcome(SliceData slice)
         {
             foreach (var outcome in outcomes)
                 if (outcome.CanPresent(slice))

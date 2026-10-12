@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -60,6 +60,7 @@ namespace Vertigo.Unity._Game.Unity.Views
 
         public void Render(GameScreenState state)
         {
+            wheel.SetInputBlocked(state.InputBlocked);
             wheel.Bind(state.Round);
             var tier = m_Configuration.GetTier(state.Round.Tier);
             wheelTitle.text = tier.Title;
@@ -70,7 +71,7 @@ namespace Vertigo.Unity._Game.Unity.Views
             spin.SetInteractable(state.CanSpin);
             cashOut.SetInteractable(state.CanCashOut);
             exitLabel.text = state.CanCashOut ? "COLLECT & EXIT" : "EXIT AT SAFE ZONE";
-            status.text = tier.StatusMessage;
+            status.text = state.AutomaticRunMessage ?? tier.StatusMessage;
             panels.Show(state);
             error.text = state.Error?.Message ?? "";
             if (state.Error?.Cause != null && !ReferenceEquals(m_LastError, state.Error))

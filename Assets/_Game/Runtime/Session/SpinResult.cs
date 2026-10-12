@@ -7,13 +7,15 @@ namespace Vertigo.Runtime._Game.Runtime.Session
         public OperationId OperationId { get; }
         public Round Round { get; }
         public int WinningIndex { get; }
-        public RoundSlice WinningSlice => Round.Slices[WinningIndex];
+        public bool IsAutomatic { get; }
+        public SliceData WinningSlice => Round.Slices[WinningIndex];
 
-        internal SpinResult(OperationId operationId, Round round, int winningIndex)
+        internal SpinResult(OperationId operationId, Round round, int winningIndex, bool isAutomatic = false)
         {
             OperationId = operationId;
             Round = round;
             WinningIndex = winningIndex;
+            IsAutomatic = isAutomatic;
         }
     }
 }

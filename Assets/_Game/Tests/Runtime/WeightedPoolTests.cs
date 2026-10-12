@@ -52,7 +52,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             var round = new RoundGenerator(Configuration(8, pool), random).Generate(5);
             Assert.That(round.Slices.Count, Is.EqualTo(8));
             Assert.That(round.SourceIndices, Is.EqualTo(Enumerable.Range(42, 8)));
-            Assert.That(round.Slices.All(slice => slice is RewardSlice), Is.True);
+            Assert.That(round.Slices.All(slice => slice is RewardSliceData), Is.True);
             Assert.That(random.Calls, Is.EqualTo(8));
         }
 
@@ -117,7 +117,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             var configuration = new WheelConfiguration(3, bronze, valid.GetCandidates(WheelTier.Silver), valid.GetCandidates(WheelTier.Gold));
             var generator = new RoundGenerator(configuration, new SequenceRandom());
             Assert.That(generator.Generate(1).SourceIndices, Is.EqualTo(new[] { 0, 1, 2 }));
-            Assert.That(generator.Generate(30).Slices.OfType<RewardSlice>().Any(slice => slice.IsSpecial), Is.True);
+            Assert.That(generator.Generate(30).Slices.OfType<RewardSliceData>().Any(slice => slice.IsSpecial), Is.True);
         }
 
         [Test]

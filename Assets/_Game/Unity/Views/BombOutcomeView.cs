@@ -7,7 +7,7 @@ namespace Vertigo.Unity._Game.Unity.Views
     public class BombOutcomeView : SliceOutcomeView
     {
         [SerializeField] private CanvasGroup flash;
-        public override bool CanPresent(RoundSlice slice) => slice is BombSlice;
+        public override bool CanPresent(SliceData slice) => slice is BombSliceData;
         public override Tween Play(WheelSliceView slice)
         {
             flash.alpha = 0;

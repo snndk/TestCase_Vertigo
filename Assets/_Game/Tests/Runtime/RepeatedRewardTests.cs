@@ -18,8 +18,8 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
         public void SameRewardHasIndependentAmountsAndSharedGrowth(int zone, long first, long second)
         {
             var round = new RoundGenerator(CreateConfiguration(), new SequenceRandom()).Generate(zone);
-            Assert.That(((RewardSlice)round.Slices[0]).Reward.Amount, Is.EqualTo(first));
-            Assert.That(((RewardSlice)round.Slices[1]).Reward.Amount, Is.EqualTo(second));
+            Assert.That(((RewardSliceData)round.Slices[0]).Reward.Amount, Is.EqualTo(first));
+            Assert.That(((RewardSliceData)round.Slices[1]).Reward.Amount, Is.EqualTo(second));
             Assert.That(round.Slices[0].Id, Is.EqualTo(round.Slices[1].Id));
         }
 
@@ -45,7 +45,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             {
                 var spin = session.RequestSpin().Result;
                 Assert.That(spin.WinningIndex, Is.EqualTo(index % 2));
-                Assert.That(((RewardSlice)spin.WinningSlice).Reward.Amount, Is.EqualTo(expected[index]));
+                Assert.That(((RewardSliceData)spin.WinningSlice).Reward.Amount, Is.EqualTo(expected[index]));
                 session.CompleteResolution(spin.OperationId);
             }
             Assert.That(session.RequestCashOut().Status, Is.EqualTo(CommandStatus.Accepted));
@@ -65,7 +65,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
         public void SliceGrowthOverflowIsRejected()
         {
             var slice = new RewardSliceDefinition("gold", new RewardDefinition("gold", 1), long.MaxValue);
-            Assert.Throws<OverflowException>(() => slice.CreateSlice(2));
+            Assert.Throws<OverflowException>(() => slice.CreateData(2));
         }
 
         private static SequenceRandom CreateRandom(params int[] indices)

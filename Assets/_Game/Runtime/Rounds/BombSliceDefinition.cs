@@ -6,9 +6,14 @@ namespace Vertigo.Runtime._Game.Runtime.Rounds
         {
         }
 
-        protected override RoundSlice CreateSliceCore(int zone)
+        protected override SliceData CreateDataCore(int zone)
         {
-            return new BombSlice(Id);
+            return new BombSliceData(Id);
+        }
+
+        protected override RoundSlice CreateBehaviorCore(SliceData data, SliceContext context)
+        {
+            return new BombSlice(context);
         }
     }
 }

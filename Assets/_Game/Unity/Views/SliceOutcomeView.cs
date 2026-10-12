@@ -8,7 +8,7 @@ namespace Vertigo.Unity._Game.Unity.Views
     {
         public virtual bool CanAccelerate => false;
         public virtual void SetPlaybackSpeed(float speed) { }
-        public abstract bool CanPresent(RoundSlice slice);
+        public abstract bool CanPresent(SliceData slice);
         public virtual Tween Highlight(WheelSliceView slice)
         {
             return DOTween.Sequence()

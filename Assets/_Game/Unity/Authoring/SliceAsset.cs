@@ -16,6 +16,6 @@ namespace Vertigo.Unity._Game.Unity.Authoring
 
         public abstract Sprite Icon { get; }
         public abstract SliceDefinition CreateDefinition();
-        public abstract string GetCaption(RoundSlice slice);
+        public abstract string GetCaption(SliceData slice);
     }
 }

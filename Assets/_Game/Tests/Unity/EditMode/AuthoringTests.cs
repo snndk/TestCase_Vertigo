@@ -23,8 +23,8 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.EditMode
             var round = new RoundGenerator(configuration.CreateRuntime(), new Vertigo.Unity._Game.Unity.Bootstrap.SystemRandomSource()).Generate(zone);
             Assert.That(round.Tier, Is.EqualTo(tier));
             Assert.That(round.Slices.Count, Is.EqualTo(8));
-            Assert.That(round.Slices.Count(slice => slice is BombSlice), Is.EqualTo(bombs));
-            Assert.That(round.Slices.OfType<RewardSlice>().Any(slice => slice.IsSpecial), Is.EqualTo(tier == WheelTier.Gold));
+            Assert.That(round.Slices.Count(slice => slice is BombSliceData), Is.EqualTo(bombs));
+            Assert.That(round.Slices.OfType<RewardSliceData>().Any(slice => slice.IsSpecial), Is.EqualTo(tier == WheelTier.Gold));
             for (var index = 0; index < round.Slices.Count; index++)
                 Assert.That(configuration.GetTier(tier).GetSlice(round.SourceIndices[index]).Id, Is.EqualTo(round.Slices[index].Id));
         }

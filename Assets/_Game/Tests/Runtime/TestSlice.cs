@@ -1,24 +1,17 @@
 using System;
-using Vertigo.Runtime._Game.Runtime.Rewards;
 using Vertigo.Runtime._Game.Runtime.Rounds;
 
 namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
 {
     internal class TestSlice : RoundSlice
     {
-        private readonly Action m_OnResolve;
+        private readonly Action<SliceContext> m_Action;
 
-        public TestSlice(Action onResolve) : base("test")
+        public TestSlice(SliceContext context, Action<SliceContext> action) : base(context)
         {
-            m_OnResolve = onResolve;
+            m_Action = action;
         }
 
-        protected override SliceResolution ResolveCore(
-            RewardCollection loot)
-        {
-            m_OnResolve();
-            return SliceResolution.ContinueWith(
-                loot.Add(new Reward("test", 7)));
-        }
+        protected override void ResolveCore() => m_Action(Context);
     }
 }

@@ -18,9 +18,14 @@ namespace Vertigo.Runtime._Game.Runtime.Rounds
             IsSpecial = isSpecial;
         }
 
-        protected override RoundSlice CreateSliceCore(int zone)
+        protected override SliceData CreateDataCore(int zone)
         {
-            return new RewardSlice(Id, Reward.AtZone(zone, BaseAmount), IsSpecial);
+            return new RewardSliceData(Id, Reward.AtZone(zone, BaseAmount), IsSpecial);
+        }
+
+        protected override RoundSlice CreateBehaviorCore(SliceData data, SliceContext context)
+        {
+            return new RewardSlice(context, ((RewardSliceData)data).Reward);
         }
     }
 }

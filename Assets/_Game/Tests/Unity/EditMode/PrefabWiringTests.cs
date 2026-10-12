@@ -65,7 +65,9 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.EditMode
             {
                 if (graphic is MaskableGraphic maskable)
                     Assert.That(maskable.maskable, Is.EqualTo(graphic.GetComponentInParent<RectMask2D>(true) != null), graphic.name);
-                if (graphic.GetComponent<Button>() == null && !graphic.name.Contains("scrim") && !graphic.name.Contains("viewport"))
+                if (graphic.GetComponent<AnimationTapView>() != null)
+                    Assert.That(graphic.raycastTarget, Is.True, "The tap surface must intercept accelerated playback and Lucky input.");
+                else if (graphic.GetComponent<Button>() == null && !graphic.name.Contains("scrim") && !graphic.name.Contains("viewport"))
                     Assert.That(graphic.raycastTarget, Is.False, graphic.name);
                 if (graphic is Image image)
                     Assert.That(image.type, Is.EqualTo(Image.Type.Sliced), image.name);
@@ -77,7 +79,8 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.EditMode
         [Test]
         public void AtlasContainsEveryAuthoredWheelAndRewardSprite()
         {
-            var atlas = AssetDatabase.LoadAssetAtPath<SpriteAtlas>("Assets/_Game/Art/Atlases/GameUI.spriteatlas");
+            var atlas = AssetDatabase.LoadAssetAtPath<SpriteAtlas>("Assets/_Game/Art/Atlases/GameUI.spriteatlasv2");
+            var icons = AssetDatabase.LoadAssetAtPath<SpriteAtlas>("Assets/_Game/Art/Atlases/RewardIcons.spriteatlasv2");
             var configuration = AssetDatabase.LoadAssetAtPath<WheelConfigurationAsset>("Assets/_Game/Settings/WheelConfiguration.asset");
             foreach (Vertigo.Runtime._Game.Runtime.Rules.WheelTier tier in System.Enum.GetValues(typeof(Vertigo.Runtime._Game.Runtime.Rules.WheelTier)))
             {
@@ -85,7 +88,10 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.EditMode
                 Assert.That(atlas.CanBindTo(visuals.Wheel), Is.True);
                 Assert.That(atlas.CanBindTo(visuals.Indicator), Is.True);
                 for (var index = 0; index < visuals.CandidateCount; index++)
-                    Assert.That(atlas.CanBindTo(visuals.GetSlice(index).Icon), Is.True);
+                {
+                    var icon = visuals.GetSlice(index).Icon;
+                    Assert.That(icons.CanBindTo(icon) || atlas.CanBindTo(icon), Is.True, icon.name);
+                }
             }
         }
     }

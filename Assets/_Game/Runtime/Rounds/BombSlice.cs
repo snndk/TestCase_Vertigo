@@ -1,16 +1,14 @@
-using Vertigo.Runtime._Game.Runtime.Rewards;
-
 namespace Vertigo.Runtime._Game.Runtime.Rounds
 {
     public class BombSlice : RoundSlice
     {
-        public BombSlice(string id) : base(id)
+        public BombSlice(SliceContext context) : base(context)
         {
         }
 
-        protected override SliceResolution ResolveCore(RewardCollection loot)
+        protected override void ResolveCore()
         {
-            return SliceResolution.Lose();
+            Context.LoseRun();
         }
     }
 }

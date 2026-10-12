@@ -24,6 +24,6 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.EditMode
         }
 
         public override SliceDefinition CreateDefinition() => new RewardSliceDefinition("additional", m_First.CreateDefinition(), 1);
-        public override string GetCaption(RoundSlice slice) => "TEST";
+        public override string GetCaption(SliceData slice) => "TEST";
     }
 }

@@ -8,6 +8,7 @@ namespace Vertigo.Runtime._Game.Runtime.Session
         CashingOut,
         CashedOut,
         AwaitingRevive,
-        Reviving
+        Reviving,
+        PreparingSpin
     }
 }

@@ -11,9 +11,13 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             m_GeneratedId = generatedId ?? id;
         }
 
-        protected override RoundSlice CreateSliceCore(int zone)
+        protected override SliceData CreateDataCore(int zone)
         {
-            return new BombSlice(m_GeneratedId);
+            return new BombSliceData(m_GeneratedId);
+        }
+        protected override RoundSlice CreateBehaviorCore(SliceData data, SliceContext context)
+        {
+            return new BombSlice(context);
         }
     }
 }

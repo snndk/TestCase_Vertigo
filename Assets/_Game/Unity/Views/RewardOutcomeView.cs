@@ -39,7 +39,7 @@ namespace Vertigo.Unity._Game.Unity.Views
         private Vector3 m_IconScale;
         private Tween m_Animation;
 
-        public override bool CanPresent(RoundSlice slice) => slice is RewardSlice;
+        public override bool CanPresent(SliceData slice) => slice is RewardSliceData;
         public override bool CanAccelerate => true;
 
         public override void SetPlaybackSpeed(float speed)
@@ -52,7 +52,7 @@ namespace Vertigo.Unity._Game.Unity.Views
         {
             ResetVisuals();
             PrepareIcons(slice);
-            var reward = ((RewardSlice)slice.Slice).Reward;
+            var reward = ((RewardSliceData)slice.Slice).Reward;
             m_ArrivalRow = rewards.PrepareArrival(reward.RewardId);
             var sequence = DOTween.Sequence();
             sequence.Append(flyingIcon.rectTransform.DOScale(m_IconScale * enlargedScale, burstDuration)
@@ -61,8 +61,7 @@ namespace Vertigo.Unity._Game.Unity.Views
             AddGlow(sequence);
             sequence.Insert(0, rewards.RevealArrival(m_ArrivalRow));
             sequence.AppendInterval(burstHold);
-            m_Animation = sequence;
-            return sequence;
+            return TrackAnimation(sequence);
         }
 
         private void AddParticleBurst(Sequence sequence)
@@ -108,11 +107,24 @@ namespace Vertigo.Unity._Game.Unity.Views
             var firstArrivalTime = flightDuration;
             var lastArrivalTime = mainIconDepartureTime + flightDuration;
             var countDuration = lastArrivalTime - firstArrivalTime;
-            var reward = ((RewardSlice)slice.Slice).Reward;
+            var reward = ((RewardSliceData)slice.Slice).Reward;
             sequence.Insert(firstArrivalTime, m_ArrivalRow.CreateArrivalCount(reward.Amount, countDuration));
             sequence.AppendInterval(m_ArrivalSettleDuration);
-            m_Animation = sequence;
-            return sequence;
+            return TrackAnimation(sequence);
+        }
+
+        private Tween TrackAnimation(Tween animation)
+        {
+            m_Animation = animation;
+            animation.OnComplete(() => ReleaseAnimation(animation));
+            animation.OnKill(() => ReleaseAnimation(animation));
+            return animation;
+        }
+
+        private void ReleaseAnimation(Tween animation)
+        {
+            if (ReferenceEquals(m_Animation, animation))
+                m_Animation = null;
         }
 
         private void AddParticleFlights(Sequence sequence, RectTransform target)

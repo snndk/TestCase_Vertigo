@@ -18,7 +18,7 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
         public SpinPresentationSequence Sequence { get; }
         public GameScreenPresenter Presenter { get; }
 
-        public PresentationTestContext(Reward reviveCost = null, RewardCollection progress = null)
+        public PresentationTestContext(Reward reviveCost = null, RewardCollection progress = null, bool includeLucky = false)
         {
             var coins = new RewardSliceDefinition("coins", new RewardDefinition("coins", 1), 10);
             var tickets = new RewardSliceDefinition("tickets", new RewardDefinition("tickets", 1), 2);
@@ -26,6 +26,16 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
                 new SliceDefinition[] { coins, tickets, new BombSliceDefinition("bomb") },
                 new[] { coins, tickets, new RewardSliceDefinition("gems", new RewardDefinition("gems", 1), 1) },
                 new[] { coins, tickets, new RewardSliceDefinition("special", new RewardDefinition("special", 1), 1, true) });
+
+            if (includeLucky)
+            {
+                var gems = new RewardSliceDefinition("gems", new RewardDefinition("gems", 1), 1);
+                configuration = new WheelConfiguration(
+                    new SliceDefinition[] { coins, tickets, new LuckySliceDefinition("lucky"), new BombSliceDefinition("bomb") },
+                    new[] { coins, tickets, gems, coins },
+                    new[] { coins, tickets, gems, new RewardSliceDefinition("special", new RewardDefinition("special", 1), 1, true) });
+                View.SliceCount = 4;
+            }
 
             if (progress != null)
                 Store.TrySave(progress);

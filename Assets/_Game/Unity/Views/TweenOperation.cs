@@ -22,8 +22,9 @@ namespace Vertigo.Unity._Game.Unity.Views
             m_Tween = tween;
             m_Completed = completed;
             tween.SetUpdate(true);
-            tween.OnComplete(() => Finish(tween, VisualResult.Completed));
-            tween.OnKill(() => Finish(tween, VisualResult.Cancelled));
+            // Let the effect release its tween reference before completion resets its visuals.
+            tween.onComplete += () => Finish(tween, VisualResult.Completed);
+            tween.onKill += () => Finish(tween, VisualResult.Cancelled);
         }
 
         public void Cancel()

@@ -13,6 +13,8 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
         public SafeZoneProgress SafeZone { get; }
         public RewardCollection Loot { get; }
         public RewardCollection Progress { get; }
+        public string AutomaticRunMessage { get; }
+        public bool InputBlocked { get; }
         public bool CanSpin { get; }
         public bool CanCashOut { get; }
         public bool CanRestart { get; }
@@ -23,7 +25,8 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
         public CashOutResult CashOut { get; }
         public PresentationError Error { get; }
 
-        public GameScreenState(SessionSnapshot snapshot, RewardCollection displayedLoot, PresentationError error)
+        public GameScreenState(SessionSnapshot snapshot, RewardCollection displayedLoot, PresentationError error,
+            bool automaticSpinPaused = false)
         {
             if (snapshot == null)
                 throw new ArgumentNullException(nameof(snapshot));
@@ -37,7 +40,14 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
             Round = snapshot.Round;
             SafeZone = ZoneRules.GetSafeZoneProgress(Round.Zone);
             Progress = snapshot.Progress;
-            CanSpin = snapshot.CanSpin;
+            var canRetryAutomaticSpin = automaticSpinPaused && snapshot.CanAutomaticSpin;
+            InputBlocked = snapshot.InputBlocked && !canRetryAutomaticSpin;
+            if (snapshot.AutomaticRun != null)
+            {
+                AutomaticRunMessage = snapshot.AutomaticRun.DisplayName;
+                AutomaticRunMessage += " - ZONE " + snapshot.AutomaticRun.TargetZone;
+            }
+            CanSpin = snapshot.CanSpin || canRetryAutomaticSpin;
             CanCashOut = snapshot.CanCashOut;
             CanRestart = snapshot.Status == SessionStatus.Lost || snapshot.Status == SessionStatus.CashedOut;
             ShowBomb = snapshot.Status == SessionStatus.Lost || AwaitingRevive;

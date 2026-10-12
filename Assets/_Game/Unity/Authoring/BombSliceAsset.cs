@@ -10,6 +10,6 @@ namespace Vertigo.Unity._Game.Unity.Authoring
         public override Color CaptionColor => new Color(1, .3f, .25f);
         public override Sprite Icon => icon;
         public override SliceDefinition CreateDefinition() => new BombSliceDefinition(Id);
-        public override string GetCaption(RoundSlice slice) => "BOMB";
+        public override string GetCaption(SliceData slice) => "BOMB";
     }
 }

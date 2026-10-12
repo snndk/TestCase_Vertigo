@@ -90,7 +90,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
         {
             var effect = Root.GetComponentInChildren<RewardOutcomeView>();
             var slice = Root.GetComponentsInChildren<WheelSliceView>()
-                .First(item => item.Slice is Vertigo.Runtime._Game.Runtime.Rounds.RewardSlice);
+                .First(item => item.Slice is Vertigo.Runtime._Game.Runtime.Rounds.RewardSliceData);
             var source = slice.IconRect.GetComponent<Image>();
             var burst = effect.Highlight(slice);
             burst.Complete();
@@ -111,7 +111,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             }
             var flight = effect.Play(slice);
             flight.Complete();
-            var reward = ((Vertigo.Runtime._Game.Runtime.Rounds.RewardSlice)slice.Slice).Reward;
+            var reward = ((Vertigo.Runtime._Game.Runtime.Rounds.RewardSliceData)slice.Slice).Reward;
             var target = Root.GetComponentsInChildren<RewardListView>()
                 .Select(list => list.GetComponentInChildren<RewardRowView>())
                 .First(row => row != null && row.name.Contains(reward.RewardId)).IconRect;
@@ -128,13 +128,13 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
         {
             var effect = Root.GetComponentInChildren<RewardOutcomeView>();
             var slice = Root.GetComponentsInChildren<WheelSliceView>()
-                .First(item => item.Slice is Vertigo.Runtime._Game.Runtime.Rounds.RewardSlice);
+                .First(item => item.Slice is Vertigo.Runtime._Game.Runtime.Rounds.RewardSliceData);
             SetDuration(effect, "flightDuration", 0.45f);
             effect.Highlight(slice).Complete();
             var particles = Root.GetComponentsInChildren<Image>()
                 .Where(item => item.name.StartsWith("ui_image_reward_burst_")).OrderBy(item => item.name).ToArray();
             var flight = effect.Play(slice);
-            var reward = ((Vertigo.Runtime._Game.Runtime.Rounds.RewardSlice)slice.Slice).Reward;
+            var reward = ((Vertigo.Runtime._Game.Runtime.Rounds.RewardSliceData)slice.Slice).Reward;
             var row = Root.GetComponentsInChildren<RewardRowView>()
                 .Single(item => item.name.Contains(reward.RewardId));
             var restScale = row.IconRect.localScale;
