@@ -12,7 +12,8 @@ namespace Vertigo.Runtime._Game.Runtime.Session
         private readonly RoundGenerator m_Rounds;
         private readonly SpinSelector m_Spins;
         private readonly ProgressService m_Progress;
-        private readonly Reward m_ReviveCost;
+        private readonly Reward m_InitialReviveCost;
+        private Reward m_ReviveCost;
         private RewardCollection m_RecoverableLoot;
         private Guid m_RunId;
         private long m_OperationSequence;
@@ -29,7 +30,7 @@ namespace Vertigo.Runtime._Game.Runtime.Session
             m_Rounds = new RoundGenerator(configuration, random);
             m_Spins = new SpinSelector(random);
             m_Progress = new ProgressService(store);
-            m_ReviveCost = reviveCost;
+            m_InitialReviveCost = reviveCost;
             BeginRun();
         }
 
@@ -176,13 +177,15 @@ namespace Vertigo.Runtime._Game.Runtime.Session
             if (m_Progress.Rewards.GetAmount(m_ReviveCost.RewardId) < m_ReviveCost.Amount)
                 return CommandStatus.InsufficientFunds;
 
-            // Prepare before charging; neither a bad next round nor a failed save may consume the payment.
+            // Prepare both values before charging; overflow or generation failure must not consume payment.
+            var nextCost = new Reward(m_ReviveCost.RewardId, checked(m_ReviveCost.Amount * 2));
             var nextRound = m_Rounds.Generate(checked(m_Round.Zone + 1));
             m_Status = SessionStatus.Reviving;
             try
             {
                 if (!m_Progress.TrySpend(m_ReviveCost))
                     return CommandStatus.SaveFailed;
+                m_ReviveCost = nextCost;
                 m_RunLoot = m_RecoverableLoot;
                 m_RecoverableLoot = RewardCollection.Empty;
                 m_Round = nextRound;
@@ -208,6 +211,7 @@ namespace Vertigo.Runtime._Game.Runtime.Session
         private void BeginRun()
         {
             var firstRound = m_Rounds.Generate(1);
+            m_ReviveCost = m_InitialReviveCost;
             m_RunId = Guid.NewGuid();
             m_OperationSequence = 0;
             m_Round = firstRound;

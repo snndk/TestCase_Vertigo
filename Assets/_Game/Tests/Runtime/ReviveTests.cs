@@ -36,8 +36,11 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             Assert.That(after.RunLoot, Is.SameAs(before.RecoverableLoot));
             Assert.That(after.Progress.GetAmount("gold"), Is.EqualTo(75));
             Assert.That(after.Progress.GetAmount("ticket"), Is.EqualTo(7));
+            Assert.That(after.ReviveCost.Amount, Is.EqualTo(50));
+            Assert.That(before.ReviveCost.Amount, Is.EqualTo(25));
             Assert.That(after.RecoverableLoot.Amounts, Is.Empty);
             Assert.That(m_Session.RequestRevive(), Is.EqualTo(CommandStatus.NotReady));
+            Assert.That(m_Session.GetSnapshot().ReviveCost.Amount, Is.EqualTo(50));
             Assert.That(m_Store.Writes, Is.EqualTo(1));
         }
 
@@ -56,6 +59,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
                 Assert.That(m_Session.RequestRevive(), Is.EqualTo(CommandStatus.SaveFailed));
             var after = m_Session.GetSnapshot();
             Assert.That(after.Status, Is.EqualTo(SessionStatus.AwaitingRevive));
+            Assert.That(after.ReviveCost, Is.SameAs(before.ReviveCost));
             Assert.That(after.Round, Is.SameAs(before.Round));
             Assert.That(after.Progress, Is.SameAs(before.Progress));
             Assert.That(after.RecoverableLoot, Is.SameAs(before.RecoverableLoot));
@@ -76,6 +80,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
                 Assert.That(m_Session.StartNewRun(), Is.EqualTo(CommandStatus.RunNotFinished));
             };
             Assert.That(m_Session.RequestRevive(), Is.EqualTo(CommandStatus.Accepted));
+            Assert.That(m_Session.GetSnapshot().ReviveCost.Amount, Is.EqualTo(50));
             Assert.That(m_Store.Writes, Is.EqualTo(1));
         }
 
@@ -115,6 +120,59 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             Assert.That(m_Session.GetSnapshot().Round, Is.SameAs(before.Round));
             Assert.That(m_Session.GetSnapshot().RecoverableLoot, Is.SameAs(before.RecoverableLoot));
             Assert.That(m_Session.GetSnapshot().Status, Is.EqualTo(SessionStatus.AwaitingRevive));
+            Assert.That(m_Store.Writes, Is.Zero);
+        }
+
+        [Test]
+        public void EachSuccessfulReviveDoublesTheNextPriceAndChecksTheIncreasedCost()
+        {
+            Assert.That(m_Session.RequestRevive(), Is.EqualTo(CommandStatus.Accepted));
+            Spin(2);
+            Assert.That(m_Session.GetSnapshot().ReviveCost.Amount, Is.EqualTo(50));
+            Assert.That(m_Session.RequestRevive(), Is.EqualTo(CommandStatus.Accepted));
+            Assert.That(m_Session.GetSnapshot().Progress.GetAmount("gold"), Is.EqualTo(25));
+            Spin(0); // Leave the safe zone before hitting another bomb.
+            Spin(2);
+            Assert.That(m_Session.GetSnapshot().ReviveCost.Amount, Is.EqualTo(100));
+            Assert.That(m_Session.GetSnapshot().CanRevive, Is.False);
+            Assert.That(m_Session.RequestRevive(), Is.EqualTo(CommandStatus.InsufficientFunds));
+            Assert.That(m_Session.GetSnapshot().ReviveCost.Amount, Is.EqualTo(100));
+            Assert.That(m_Store.Writes, Is.EqualTo(2));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void NewRunRestoresInitialPriceAfterGiveUpOrCashOut(bool cashOut)
+        {
+            m_Session.RequestRevive();
+            if (cashOut)
+            {
+                Spin(0);
+                Assert.That(m_Session.RequestCashOut().Status, Is.EqualTo(CommandStatus.Accepted));
+            }
+            else
+            {
+                Spin(2);
+                Assert.That(m_Session.GiveUp(), Is.EqualTo(CommandStatus.Accepted));
+            }
+            Assert.That(m_Session.StartNewRun(), Is.EqualTo(CommandStatus.Accepted));
+            Assert.That(m_Session.GetSnapshot().ReviveCost.Amount, Is.EqualTo(25));
+        }
+
+        [Test]
+        public void PriceOverflowCannotChargeOrChangeThePendingDecision()
+        {
+            m_Store.Progress = new RewardCollection(new[] { new Reward("gold", long.MaxValue) });
+            m_Session = new GameSession(TestWheelFactory.Create(), m_Random, m_Store,
+                new Reward("gold", long.MaxValue));
+            Spin(2);
+            var before = m_Session.GetSnapshot();
+            Assert.Throws<OverflowException>(() => m_Session.RequestRevive());
+            var after = m_Session.GetSnapshot();
+            Assert.That(after.Status, Is.EqualTo(SessionStatus.AwaitingRevive));
+            Assert.That(after.ReviveCost, Is.SameAs(before.ReviveCost));
+            Assert.That(after.Progress, Is.SameAs(before.Progress));
+            Assert.That(after.Round, Is.SameAs(before.Round));
             Assert.That(m_Store.Writes, Is.Zero);
         }
 

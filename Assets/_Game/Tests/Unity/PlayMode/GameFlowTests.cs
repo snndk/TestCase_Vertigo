@@ -125,11 +125,17 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             Assert.That(Session.GetSnapshot().RunId, Is.EqualTo(runId));
             Assert.That(Text("wallet_amount"), Is.EqualTo("225"));
             yield return SpinAndWait();
+            StringAssert.StartsWith("REVIVE 50 ", Text("bomb_revive_label"));
+            Button("bomb_revive").onClick.Invoke();
+            Assert.That(Session.GetSnapshot().Progress.GetAmount("Gold"), Is.EqualTo(175));
+            yield return SpinAndWait();
+            StringAssert.StartsWith("REVIVE 100 ", Text("bomb_revive_label"));
             Button("bomb_give_up").onClick.Invoke();
             Assert.That(Session.GetSnapshot().Round.Zone, Is.EqualTo(1));
             Assert.That(Session.GetSnapshot().RunId, Is.Not.EqualTo(runId));
             Assert.That(Session.GetSnapshot().RunLoot.Amounts, Is.Empty);
-            Assert.That(Session.GetSnapshot().Progress.GetAmount("Gold"), Is.EqualTo(225));
+            Assert.That(Session.GetSnapshot().Progress.GetAmount("Gold"), Is.EqualTo(175));
+            Assert.That(Session.GetSnapshot().ReviveCost.Amount, Is.EqualTo(25));
         }
 
         [UnityTest]
