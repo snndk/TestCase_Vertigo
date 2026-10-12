@@ -27,6 +27,7 @@
 
 # Visual Studio cache directory
 .vs/
+.idea/
 
 # Gradle cache directory
 .gradle/
@@ -101,3 +102,11 @@ GEMINI.md
 /CASE_BRIEF.md
 /CASE_REQUIREMENTS.md
 /ARCHITECTURE.md
+
+# Local development packages and their generated dependencies
+/Packages/com.ivanmurzak.unity.mcp/
+/Packages/com.ivanmurzak.unity.mcp.meta
+/Packages/extensions.unity.playerprefsex/
+/Packages/extensions.unity.playerprefsex.meta
+/Assets/Plugins/NuGet/
+/Assets/Plugins/NuGet.meta
