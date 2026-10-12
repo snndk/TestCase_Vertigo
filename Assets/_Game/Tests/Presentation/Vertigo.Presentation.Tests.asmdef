@@ -1,0 +1,11 @@
+{
+    "name": "Vertigo.Presentation.Tests",
+    "rootNamespace": "Vertigo.Tests.Presentation",
+    "references": ["Vertigo.Runtime", "Vertigo.Presentation"],
+    "includePlatforms": ["Editor"],
+    "optionalUnityReferences": ["TestAssemblies"],
+    "autoReferenced": false,
+    "overrideReferences": true,
+    "precompiledReferences": ["nunit.framework.dll"],
+    "noEngineReferences": true
+}
