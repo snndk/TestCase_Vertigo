@@ -8,6 +8,8 @@ namespace Vertigo.Presentation._Game.Presentation.ViewContracts
         event Action SpinRequested;
         event Action CashOutRequested;
         event Action RestartRequested;
+        event Action ReviveRequested;
+        event Action GiveUpRequested;
 
         int SliceCount { get; }
 

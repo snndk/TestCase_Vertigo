@@ -44,6 +44,8 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
             m_View.SpinRequested += OnSpinRequested;
             m_View.CashOutRequested += OnCashOutRequested;
             m_View.RestartRequested += OnRestartRequested;
+            m_View.ReviveRequested += OnReviveRequested;
+            m_View.GiveUpRequested += OnGiveUpRequested;
             try
             {
                 Render();
@@ -65,6 +67,8 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
             m_View.SpinRequested -= OnSpinRequested;
             m_View.CashOutRequested -= OnCashOutRequested;
             m_View.RestartRequested -= OnRestartRequested;
+            m_View.ReviveRequested -= OnReviveRequested;
+            m_View.GiveUpRequested -= OnGiveUpRequested;
             try
             {
                 m_Spin.Cancel();
@@ -130,6 +134,35 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
                 if (m_Session.StartNewRun() != CommandStatus.Accepted)
                     return;
 
+                m_Error = null;
+                Synchronize();
+            });
+        }
+
+        private void OnReviveRequested()
+        {
+            HandleInput(() =>
+            {
+                var status = m_Session.RequestRevive();
+                if (status == CommandStatus.Accepted)
+                    m_Error = null;
+                else if (status == CommandStatus.SaveFailed)
+                    m_Error = new PresentationError("Revive could not be saved. Your currency has not been spent. Try again.");
+                else if (status == CommandStatus.InsufficientFunds)
+                    m_Error = new PresentationError("Not enough currency to revive.");
+                else
+                    return;
+                Synchronize();
+            });
+        }
+
+        private void OnGiveUpRequested()
+        {
+            HandleInput(() =>
+            {
+                if (m_Session.GiveUp() != CommandStatus.Accepted)
+                    return;
+                m_Session.StartNewRun();
                 m_Error = null;
                 Synchronize();
             });

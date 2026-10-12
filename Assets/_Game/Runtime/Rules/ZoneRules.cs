@@ -15,6 +15,15 @@ namespace Vertigo.Runtime._Game.Runtime.Rules
             return zone % 5 == 0 ? WheelTier.Silver : WheelTier.Bronze;
         }
 
+        public static SafeZoneProgress GetSafeZoneProgress(int zone)
+        {
+            if (zone < 1)
+                throw new ArgumentOutOfRangeException(nameof(zone));
+
+            var target = checked(((zone - 1) / 5 + 1) * 5);
+            return new SafeZoneProgress(zone, target - 4, target, GetTier(target));
+        }
+
         public static bool IsSafe(int zone)
         {
             return GetTier(zone) != WheelTier.Bronze;

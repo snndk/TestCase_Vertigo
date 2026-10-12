@@ -10,6 +10,10 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
         public event Action SpinRequested;
         public event Action CashOutRequested;
         public event Action RestartRequested;
+        public event Action ReviveRequested;
+        public event Action GiveUpRequested;
+        public void RequestRevive() => ReviveRequested?.Invoke();
+        public void RequestGiveUp() => GiveUpRequested?.Invoke();
 
         public int SliceCount { get; set; } = 3;
         public GameScreenState State { get; private set; }
