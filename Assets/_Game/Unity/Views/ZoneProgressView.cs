@@ -8,6 +8,8 @@ namespace Vertigo.Unity._Game.Unity.Views
         [SerializeField] private RectTransform viewport;
         [SerializeField] private ZoneCellView[] cells;
         [SerializeField] private RectTransform indicator;
+        [SerializeField, Min(0.01f)] private float slideDuration = 0.35f;
+        private const float m_HorizontalPadding = 70f;
         private int m_Zone;
         private int m_FirstZone = 1;
         private Sequence m_Transition;
@@ -23,11 +25,11 @@ namespace Vertigo.Unity._Game.Unity.Views
 
         private void Arrange(bool animate)
         {
-            m_Transition?.Kill();
+            m_Transition?.Kill(false);
             var visible = cells.Length - 2;
             var middle = visible / 2;
             var first = Mathf.Max(1, m_Zone - middle);
-            var spacing = (viewport.rect.width - 70) / (visible - 1);
+            var spacing = (viewport.rect.width - m_HorizontalPadding) / (visible - 1);
             var shift = animate ? (first - m_FirstZone) * spacing : 0;
             m_FirstZone = first;
             m_Transition = animate ? DOTween.Sequence().SetUpdate(true) : null;
@@ -39,12 +41,16 @@ namespace Vertigo.Unity._Game.Unity.Views
                 cell.Rect.anchoredPosition = end + new Vector2(shift, 0);
                 if (animate)
                     m_Transition.Join(DOTween.To(() => cell.Rect.anchoredPosition,
-                        value => cell.Rect.anchoredPosition = value, end, .35f).SetEase(Ease.OutCubic));
+                        value => cell.Rect.anchoredPosition = value, end, slideDuration).SetEase(Ease.OutQuart));
             }
             var target = new Vector2((m_Zone - first - middle) * spacing, 0);
             if (animate)
+            {
                 m_Transition.Join(DOTween.To(() => indicator.anchoredPosition,
-                    value => indicator.anchoredPosition = value, target, .35f).SetEase(Ease.OutCubic));
+                    value => indicator.anchoredPosition = value, target, slideDuration).SetEase(Ease.OutQuart));
+                var currentCell = cells[m_Zone - first + 1];
+                m_Transition.Insert(slideDuration, currentCell.CreateArrival());
+            }
             else
                 indicator.anchoredPosition = target;
         }
@@ -63,7 +69,7 @@ namespace Vertigo.Unity._Game.Unity.Views
 
         private void OnDisable()
         {
-            m_Transition?.Kill();
+            m_Transition?.Kill(false);
             m_Transition = null;
             if (m_Zone > 0)
                 Arrange(false);
