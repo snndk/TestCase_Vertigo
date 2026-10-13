@@ -26,6 +26,8 @@ namespace Vertigo.Runtime._Game.Runtime.Session
         private CashOutResult m_LastCashOut;
         private AutomaticRun m_AutomaticRun;
 
+        public bool CanAutomaticSpin => m_Status == SessionStatus.Ready && m_AutomaticRun != null;
+
         public GameSession(WheelConfiguration configuration, IRandomSource random, IProgressStore store,
             Reward reviveCost = null, int reviveIncreasePercent = 100)
         {

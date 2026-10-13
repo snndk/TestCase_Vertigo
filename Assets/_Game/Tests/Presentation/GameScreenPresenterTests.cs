@@ -37,6 +37,24 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
             Assert.That(m_Context.Random.Calls, Is.EqualTo(1));
         }
 
+        [TestCase(false)]
+        [TestCase(true)]
+        public void AdvancingWithoutAStateChangeDoesNotAllocate(bool spinning)
+        {
+            if (spinning)
+                m_Context.Input.RequestSpin();
+
+            // Warm up the measured path; zero elapsed time keeps the pending animation from timing out.
+            for (var index = 0; index < 64; index++)
+                m_Context.Presenter.AdvancePresentation(TimeSpan.Zero);
+            var before = GC.GetAllocatedBytesForCurrentThread();
+            for (var index = 0; index < 10000; index++)
+                m_Context.Presenter.AdvancePresentation(TimeSpan.Zero);
+            var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+
+            Assert.That(allocated, Is.Zero);
+        }
+
         [Test]
         public void LootAppearsOnlyAfterTheOutcomeAndNextRoundIsNotShownEarly()
         {

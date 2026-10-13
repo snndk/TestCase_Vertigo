@@ -89,13 +89,13 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
         {
             m_Spin.Advance(elapsed);
             // Schedule at most one automatic spin per tick, even with synchronous views.
-            if (!m_AutomaticSpinPaused && m_Session.GetSnapshot().CanAutomaticSpin)
+            if (!m_AutomaticSpinPaused && m_Session.CanAutomaticSpin)
                 HandleAction(RequestAutomaticSpin);
         }
 
         private void OnSpinRequested()
         {
-            if (m_AutomaticSpinPaused && m_Session.GetSnapshot().CanAutomaticSpin)
+            if (m_AutomaticSpinPaused && m_Session.CanAutomaticSpin)
                 HandleAction(RequestAutomaticSpin);
             else
                 HandleInput(() => PresentSpin(m_Session.RequestSpin()));
