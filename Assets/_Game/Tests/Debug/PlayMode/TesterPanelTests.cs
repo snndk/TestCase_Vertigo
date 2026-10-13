@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using SRDebugger;
+using SRF.Service;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -148,6 +149,30 @@ namespace Vertigo.Tests.Debug._Game.Tests.Debug.PlayMode
             Assert.That(m_Game.GetSnapshot().RunId, Is.EqualTo(run));
             Assert.That(m_Game.GetSnapshot().Round.Zone, Is.EqualTo(30));
             Assert.That(m_Game.GetSnapshot().RunLoot.Amounts, Is.Empty);
+        }
+
+        [Test]
+        public void DisablingPanelAfterDebuggerShutdownDoesNotAccessStoppedServices()
+        {
+            var panel = m_Game.gameObject.AddComponent<GameDebugPanel>();
+            var debugger = SRDebug.Instance;
+            var options = (GameDebugOptions)typeof(GameDebugPanel)
+                .GetField("m_Options", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(panel);
+            var shutdown = typeof(SRServiceManager).GetField("_hasQuit", BindingFlags.Static | BindingFlags.NonPublic);
+            var previous = shutdown.GetValue(null);
+            try
+            {
+                // Reproduce the SDK state between its quit callback and our OnDisable.
+                shutdown.SetValue(null, true);
+                Assert.That(SRDebug.Instance, Is.Null);
+                panel.enabled = false;
+                LogAssert.NoUnexpectedReceived();
+            }
+            finally
+            {
+                shutdown.SetValue(null, previous);
+                debugger.RemoveOptionContainer(options.Container);
+            }
         }
 
         [UnityTest]

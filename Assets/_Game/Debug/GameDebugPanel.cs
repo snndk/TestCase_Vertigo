@@ -57,13 +57,15 @@ namespace Vertigo.Debug._Game.Debug
 
         private void OnDisable()
         {
-            if (m_Options != null)
-            {
-                foreach (var option in m_Options.Container.Options)
-                    m_Pins?.Unpin(option);
-                SRDebug.Instance.RemoveOptionContainer(m_Options.Container);
-            }
             m_Session?.ClearOverrides();
+
+            // The SDK may shut down before this component; cleanup must not recreate its services.
+            if (m_Options == null || !SRServiceManager.HasInstance || !SRServiceManager.HasService<IDebugService>())
+                return;
+
+            foreach (var option in m_Options.Container.Options)
+                m_Pins?.Unpin(option);
+            SRDebug.Instance.RemoveOptionContainer(m_Options.Container);
         }
 
         private void Update()
