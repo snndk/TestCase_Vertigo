@@ -77,5 +77,5 @@ MonoBehaviour:
     weight: 50
     spinWeight: 1
   - slice: {fileID: 11400000, guid: 79c87f79eee6e8b4e9b10e98d87e6f87, type: 2}
-    weight: 10
+    weight: 16
     spinWeight: 1
