@@ -160,6 +160,8 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
                     return;
 
                 Synchronize();
+                if (response.Status == CommandStatus.Accepted)
+                    m_View.ShowCashOutFeedback();
             });
         }
 

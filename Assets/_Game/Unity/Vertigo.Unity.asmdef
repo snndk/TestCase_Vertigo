@@ -6,7 +6,8 @@
         "Vertigo.Presentation",
         "Unity.ugui",
         "Unity.TextMeshPro",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Lofelt.NiceVibrations"
     ],
     "autoReferenced": false,
     "overrideReferences": true,

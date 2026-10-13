@@ -149,6 +149,7 @@ MonoBehaviour:
   - {fileID: 427284254898402584}
   pointer: {fileID: 636607104666459277}
   tierTransition: {fileID: 296194764485535324}
+  haptics: {fileID: 3039149999963717030}
   spinDuration: 4
   revolutions: 5
   acceleratedSpinSpeed: 16
@@ -194,6 +195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a1e615865686ec47b8496dbf97aabc6, type: 3}
   m_Name:
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Views.LuckyOutcomeView
+  outcomeHaptic: 2
   duration: 0.5
 --- !u!114 &7260264465473868180
 MonoBehaviour:
@@ -2770,6 +2772,7 @@ GameObject:
   - component: {fileID: 2377958637002528218}
   - component: {fileID: 6727050888538020064}
   - component: {fileID: 812341990123450001}
+  - component: {fileID: 3039149999963717030}
   m_Layer: 0
   m_Name: ui_canvas_game
   m_TagString: Untagged
@@ -2885,6 +2888,7 @@ MonoBehaviour:
   exitFeedback: {fileID: 71988620424833848}
   wheelTitle: {fileID: 1489350677492629628}
   walletFeedback: {fileID: 1435826339022222725}
+  haptics: {fileID: 3039149999963717030}
   walletIcon: {fileID: 4177591823077766116}
   walletIconBounds: {x: 40, y: 34}
   status: {fileID: 256523654929952037}
@@ -2927,6 +2931,19 @@ MonoBehaviour:
   restart: {fileID: 354993500729712337}
   tap: {fileID: 2579180274636254361}
   wheel: {fileID: 8546253114794874879}
+--- !u!114 &3039149999963717030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405305433897406804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c476662cb01f08c43b24240c5f0310ef, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Haptics.GameHaptics
+  profile: {fileID: 11400000, guid: 3f7fcf8bb2fab674e83229da310cc656, type: 2}
 --- !u!1 &1450785040106149303
 GameObject:
   m_ObjectHideFlags: 0
@@ -9408,6 +9425,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09452aa4d8c748145bbc8b69db1c5da9, type: 3}
   m_Name:
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Views.BombOutcomeView
+  outcomeHaptic: 3
   flash: {fileID: 8375214707967375781}
 --- !u!1 &5337830314401319032
 GameObject:
@@ -10715,6 +10733,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e649852f4cbf7f4b8b6e4b694bff2d4, type: 3}
   m_Name:
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Views.RewardOutcomeView
+  outcomeHaptic: 2
   flyingIcon: {fileID: 6890496442069378346}
   rewards: {fileID: 3168929112265288676}
   celebration: {fileID: 2980276803083865796}

@@ -1,11 +1,14 @@
 using DG.Tweening;
 using UnityEngine;
 using Vertigo.Runtime._Game.Runtime.Rounds;
+using Vertigo.Unity._Game.Unity.Haptics;
 
 namespace Vertigo.Unity._Game.Unity.Views
 {
     public abstract class SliceOutcomeView : MonoBehaviour
     {
+        [SerializeField] private HapticCue outcomeHaptic = HapticCue.Reward;
+        public HapticCue OutcomeHaptic => outcomeHaptic;
         public virtual bool CanAccelerate => false;
         public virtual void SetPlaybackSpeed(float speed) { }
         public abstract bool CanPresent(SliceData slice);

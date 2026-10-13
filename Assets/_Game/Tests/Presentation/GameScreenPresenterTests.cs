@@ -239,6 +239,7 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
             m_Context.Presenter.Detach();
             m_Context.Presenter.Attach();
             Assert.That(m_Context.View.State.CashOut, Is.SameAs(receipt));
+            Assert.That(m_Context.View.CashOutFeedbackCount, Is.EqualTo(1));
             m_Context.Input.RequestRestart();
             Assert.That(m_Context.View.State.CashOut, Is.Null);
             CollectionAssert.AreEquivalent(loot.Amounts, m_Context.View.State.Progress.Amounts);
@@ -265,9 +266,11 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
             Assert.That(m_Context.View.State.Loot, Is.SameAs(loot));
             Assert.That(m_Context.View.State.CanCashOut, Is.True);
             m_Context.Store.FailWrites = false;
+            Assert.That(m_Context.View.CashOutFeedbackCount, Is.Zero);
             m_Context.Input.RequestCashOut();
             Assert.That(m_Context.View.State.Error, Is.Null);
             CollectionAssert.AreEquivalent(loot.Amounts, m_Context.View.State.CashOut.Rewards.Amounts);
+            Assert.That(m_Context.View.CashOutFeedbackCount, Is.EqualTo(1));
         }
 
         [Test]

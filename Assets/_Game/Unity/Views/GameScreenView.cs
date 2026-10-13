@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using Vertigo.Presentation._Game.Presentation.GameScreen;
 using Vertigo.Presentation._Game.Presentation.ViewContracts;
 using Vertigo.Unity._Game.Unity.Authoring;
+using Vertigo.Unity._Game.Unity.Haptics;
 
 namespace Vertigo.Unity._Game.Unity.Views
 {
@@ -18,6 +19,7 @@ namespace Vertigo.Unity._Game.Unity.Views
         [SerializeField] private CashOutButtonFeedback exitFeedback;
         [SerializeField] private TMP_Text wheelTitle;
         [SerializeField] private WalletFeedbackView walletFeedback;
+        [SerializeField] private GameHaptics haptics;
         [SerializeField] private Image walletIcon;
         [SerializeField] private Vector2 walletIconBounds = new Vector2(40, 34);
         [SerializeField] private TMP_Text status;
@@ -80,7 +82,12 @@ namespace Vertigo.Unity._Game.Unity.Views
         public void ShowSpending(Reward cost)
         {
             if (cost != null && cost.RewardId == m_Currency.Id)
+            {
                 walletFeedback.ShowSpending(cost.Amount, m_Currency.DisplayName);
+                haptics.Play(HapticCue.Revive);
+            }
         }
+
+        public void ShowCashOutFeedback() => haptics.Play(HapticCue.CashOut);
     }
 }

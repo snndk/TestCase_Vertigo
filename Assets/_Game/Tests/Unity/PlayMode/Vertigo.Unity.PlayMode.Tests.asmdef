@@ -1,7 +1,7 @@
 {
     "name": "Vertigo.Unity.PlayMode.Tests",
     "rootNamespace": "Vertigo.Tests.Unity",
-    "references": ["Vertigo.Runtime", "Vertigo.Presentation", "Vertigo.Unity", "Unity.ugui", "Unity.TextMeshPro"],
+    "references": ["Vertigo.Runtime", "Vertigo.Presentation", "Vertigo.Unity", "Unity.ugui", "Unity.TextMeshPro", "Lofelt.NiceVibrations"],
     "optionalUnityReferences": ["TestAssemblies"],
     "autoReferenced": false,
     "overrideReferences": true,

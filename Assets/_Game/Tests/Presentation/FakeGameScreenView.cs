@@ -16,6 +16,8 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
         public List<Reward> Spending { get; } = new List<Reward>();
 
         public void ShowSpending(Reward cost) => Spending.Add(cost);
+        public int CashOutFeedbackCount { get; private set; }
+        public void ShowCashOutFeedback() => CashOutFeedbackCount++;
 
         public void Render(GameScreenState state)
         {

@@ -13,5 +13,6 @@ namespace Vertigo.Presentation._Game.Presentation.ViewContracts
         void Render(GameScreenState state);
 
         void ShowSpending(Reward cost);
+        void ShowCashOutFeedback();
     }
 }

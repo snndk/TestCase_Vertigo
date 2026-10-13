@@ -6,6 +6,7 @@ using Vertigo.Presentation._Game.Presentation.ViewContracts;
 using Vertigo.Runtime._Game.Runtime.Rounds;
 using Vertigo.Runtime._Game.Runtime.Session;
 using Vertigo.Unity._Game.Unity.Authoring;
+using Vertigo.Unity._Game.Unity.Haptics;
 
 namespace Vertigo.Unity._Game.Unity.Views
 {
@@ -18,6 +19,7 @@ namespace Vertigo.Unity._Game.Unity.Views
         [SerializeField] private SliceOutcomeView[] outcomes;
         [SerializeField] private WheelPointerView pointer;
         [SerializeField] private WheelTierTransition tierTransition;
+        [SerializeField] private GameHaptics haptics;
         [SerializeField, Min(0.01f)] private float spinDuration = 4;
         [SerializeField, Min(1)] private int revolutions = 5;
         [SerializeField, Min(1f)] private float acceleratedSpinSpeed = 16f;
@@ -37,6 +39,7 @@ namespace Vertigo.Unity._Game.Unity.Views
 
         public void Initialize(WheelConfigurationAsset configuration)
         {
+            haptics.Stop();
             m_Configuration = configuration;
             foreach (var outcome in outcomes)
                 outcome.ResetVisuals();
@@ -79,8 +82,11 @@ namespace Vertigo.Unity._Game.Unity.Views
             m_Operation.Play(CreateSpinTween(result.WinningIndex), status =>
             {
                 m_IsSpinning = false;
+                if (status.Status == VisualStatus.Completed)
+                    haptics.Play(HapticCue.WheelStop);
                 completed(status);
             });
+            haptics.Play(HapticCue.SpinStart);
             if (result.IsAutomatic)
                 Accelerate();
         }
@@ -125,6 +131,7 @@ namespace Vertigo.Unity._Game.Unity.Views
                 completed(status);
             });
             m_Operation.Accelerate(m_RewardSpeed);
+            haptics.Play(outcome.OutcomeHaptic);
         }
 
         public void Accelerate()
@@ -155,6 +162,8 @@ namespace Vertigo.Unity._Game.Unity.Views
 
         public void Cancel()
         {
+            if (haptics != null)
+                haptics.Stop();
             ResetAcceleration();
             tierTransition.Finish();
             m_Operation.Cancel();
