@@ -19,6 +19,7 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
         public bool CanCashOut { get; }
         public bool CanRestart { get; }
         public bool ShowBomb { get; }
+        public RewardCollection BombRewards { get; }
         public bool AwaitingRevive { get; }
         public bool CanRevive { get; }
         public Reward ReviveCost { get; }
@@ -51,6 +52,7 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
             CanCashOut = snapshot.CanCashOut;
             CanRestart = snapshot.Status == SessionStatus.Lost || snapshot.Status == SessionStatus.CashedOut;
             ShowBomb = snapshot.Status == SessionStatus.Lost || AwaitingRevive;
+            BombRewards = snapshot.FailedRunLoot;
             CashOut = snapshot.LastCashOut;
             Error = error;
         }

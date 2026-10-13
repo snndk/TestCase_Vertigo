@@ -81,6 +81,8 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             Assert.That(m_Session.GetSnapshot().Status, Is.EqualTo(SessionStatus.Resolving));
             Assert.That(m_Session.CompleteResolution(bomb.OperationId), Is.EqualTo(CommandStatus.Accepted));
             Assert.That(m_Session.GetSnapshot().Status, Is.EqualTo(SessionStatus.Lost));
+            Assert.That(m_Session.GetSnapshot().FailedRunLoot, Is.SameAs(before.RunLoot));
+            Assert.That(m_Session.GetSnapshot().RecoverableLoot.Amounts, Is.Empty);
             Assert.That(m_Session.RequestSpin().Status, Is.EqualTo(CommandStatus.NotReady));
             Assert.That(m_Session.RequestCashOut().Status, Is.EqualTo(CommandStatus.NotReady));
 
@@ -90,6 +92,7 @@ namespace Vertigo.Tests.Runtime._Game.Tests.Runtime
             Assert.That(restarted.Round.Zone, Is.EqualTo(1));
             Assert.That(restarted.Progress.GetAmount("ticket"), Is.EqualTo(9));
             Assert.That(restarted.RunLoot.Amounts, Is.Empty);
+            Assert.That(restarted.FailedRunLoot.Amounts, Is.Empty);
 
             var newSpin = m_Session.RequestSpin().Result;
             Assert.That(newSpin.OperationId.Sequence, Is.EqualTo(1));

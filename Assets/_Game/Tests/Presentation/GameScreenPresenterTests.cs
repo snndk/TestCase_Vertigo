@@ -195,6 +195,10 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
             Assert.That(m_Context.View.State.CanRestart, Is.True);
             Assert.That(m_Context.View.State.CanSpin, Is.False);
             Assert.That(m_Context.View.State.Loot.Amounts, Is.Empty);
+            Assert.That(m_Context.View.State.BombRewards.GetAmount("coins"), Is.EqualTo(10));
+            m_Context.Presenter.Detach();
+            m_Context.Presenter.Attach();
+            Assert.That(m_Context.View.State.BombRewards.GetAmount("coins"), Is.EqualTo(10));
             m_Context.Input.RequestRestart();
             Assert.That(m_Context.Session.GetSnapshot().RunId, Is.Not.EqualTo(oldRun));
             Assert.That(m_Context.View.State.ShowBomb, Is.False);

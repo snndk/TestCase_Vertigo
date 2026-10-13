@@ -12,6 +12,8 @@ namespace Vertigo.Unity._Game.Unity.Views
         [SerializeField] private GameObject bombPanel;
         [SerializeField] private RectTransform bombMotion;
         [SerializeField] private TMP_Text bombBody;
+        [SerializeField] private TMP_Text bombRewardsTitle;
+        [SerializeField] private RewardListView bombRewards;
         [SerializeField] private TMP_Text reviveLabel;
         [SerializeField] private TMP_Text giveUpLabel;
         [SerializeField] private GameObject cashOutPanel;
@@ -28,6 +30,7 @@ namespace Vertigo.Unity._Game.Unity.Views
             m_Catalog = catalog;
             m_Currency = currency;
             cashOutRewards.Initialize(catalog);
+            bombRewards.Initialize(catalog);
         }
 
         public void Show(GameScreenState state)
@@ -39,11 +42,20 @@ namespace Vertigo.Unity._Game.Unity.Views
         private void ShowBomb(GameScreenState state)
         {
             ShowPanel(bombPanel, bombMotion, state.ShowBomb, ref m_BombTween);
+            if (!state.ShowBomb)
+                return;
+
+            var hasRewards = state.BombRewards.Amounts.Count > 0;
+            bombRewards.gameObject.SetActive(hasRewards);
+            bombRewards.Show(state.BombRewards);
+            bombRewardsTitle.text = hasRewards
+                ? (state.AwaitingRevive ? "REWARDS AT RISK" : "REWARDS LOST")
+                : "NO REWARDS COLLECTED YET";
             reviveLabel.text = state.ReviveCost == null ? "REVIVE" :
                 "REVIVE " + state.ReviveCost.Amount.ToString("N0") + " " + GetCurrencyName(state.ReviveCost.RewardId);
             giveUpLabel.text = state.AwaitingRevive ? "GIVE UP" : "RESTART";
             bombBody.text = state.AwaitingRevive ?
-                "Revive to keep your rewards and continue.\nGive up to start a new run." :
+                "Give up and lose all rewards collected in this run.\nRevive to keep them and continue!" :
                 "Your run rewards were lost.\nStart a new run and try again!";
         }
 

@@ -16,6 +16,7 @@ namespace Vertigo.Runtime._Game.Runtime.Session
         private readonly int m_ReviveIncreasePercent;
         private Reward m_ReviveCost;
         private RewardCollection m_RecoverableLoot;
+        private RewardCollection m_FailedRunLoot;
         private Guid m_RunId;
         private long m_OperationSequence;
         private SessionStatus m_Status;
@@ -50,7 +51,7 @@ namespace Vertigo.Runtime._Game.Runtime.Session
         public SessionSnapshot GetSnapshot()
         {
             return new SessionSnapshot(m_RunId, m_Status, m_Round, m_RunLoot, m_Progress.Rewards,
-                m_PendingSpin, m_LastCashOut, m_ReviveCost, m_RecoverableLoot, m_AutomaticRun?.Snapshot);
+                m_PendingSpin, m_LastCashOut, m_ReviveCost, m_RecoverableLoot, m_AutomaticRun?.Snapshot, m_FailedRunLoot);
         }
 
         public SpinResponse RequestSpin()
@@ -121,6 +122,7 @@ namespace Vertigo.Runtime._Game.Runtime.Session
             var nextSequence = checked(m_OperationSequence + 1);
             var result = new SpinResult(new OperationId(m_RunId, nextSequence), m_Round, winningIndex, automatic);
             m_RecoverableLoot = !context.ContinuesRun && m_ReviveCost != null ? m_RunLoot : RewardCollection.Empty;
+            m_FailedRunLoot = !context.ContinuesRun ? m_RunLoot : RewardCollection.Empty;
             m_RunLoot = context.Loot;
             m_OperationSequence = nextSequence;
             m_PendingSpin = result;
@@ -204,6 +206,7 @@ namespace Vertigo.Runtime._Game.Runtime.Session
                 m_ReviveCost = nextCost;
                 m_RunLoot = m_RecoverableLoot;
                 m_RecoverableLoot = RewardCollection.Empty;
+                m_FailedRunLoot = RewardCollection.Empty;
                 m_Round = nextRound;
                 m_Status = SessionStatus.Ready;
                 return CommandStatus.Accepted;
@@ -241,6 +244,7 @@ namespace Vertigo.Runtime._Game.Runtime.Session
             m_Round = firstRound;
             m_RunLoot = RewardCollection.Empty;
             m_RecoverableLoot = RewardCollection.Empty;
+            m_FailedRunLoot = RewardCollection.Empty;
             m_PendingSpin = null;
             m_PendingContext = null;
             m_LastCashOut = null;
