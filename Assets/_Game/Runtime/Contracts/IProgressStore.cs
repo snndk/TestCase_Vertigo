@@ -11,7 +11,8 @@ namespace Vertigo.Runtime._Game.Runtime.Contracts
         RewardCollection Load();
 
         /// <summary>
-        /// Atomically replaces the entire snapshot. True means committed; false means an expected
+        /// Atomically replaces the store's persisted progress. An adapter may persist only its configured
+        /// currency while other rewards remain session-local. True means committed; false means an expected
         /// write failure with the previous snapshot intact. Unexpected exceptions propagate and
         /// must also leave the previous snapshot intact. Never report failure after committing.
         /// </summary>

@@ -13,18 +13,24 @@ using Vertigo.Unity._Game.Unity.Bootstrap;
 using Vertigo.Unity._Game.Unity.Views;
 using Vertigo.Presentation._Game.Presentation.GameScreen;
 using Vertigo.Runtime._Game.Runtime.Session;
+using Vertigo.Runtime._Game.Runtime.Wallet;
 
 namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
 {
     public class TapToStartTests
     {
         private GameObject m_Root;
+        private GameObject m_Parent;
 
         [UnityTest]
         public IEnumerator OpeningTapStartsOnceWithoutSpinningAndDoesNotReturnOnReenable()
         {
+            m_Parent = new GameObject("Tap to start test");
+            m_Parent.SetActive(false);
             m_Root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/_Game/Prefabs/ui_canvas_game.prefab"));
+                "Assets/_Game/Prefabs/ui_canvas_game.prefab"), m_Parent.transform);
+            m_Root.GetComponent<GameBootstrap>().Initialize(new InMemoryProgressStore());
+            m_Parent.SetActive(true);
             yield return null;
             var start = m_Root.GetComponentInChildren<TapToStartView>(true);
             var bootstrap = m_Root.GetComponent<GameBootstrap>();
@@ -68,8 +74,8 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
         [TearDown]
         public void TearDown()
         {
-            if (m_Root != null)
-                Object.DestroyImmediate(m_Root);
+            if (m_Parent != null)
+                Object.DestroyImmediate(m_Parent);
         }
     }
 }

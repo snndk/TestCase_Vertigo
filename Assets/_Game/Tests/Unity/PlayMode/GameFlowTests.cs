@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using System;
 using System.Collections;
+using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEditor;
@@ -18,6 +19,7 @@ using Vertigo.Runtime._Game.Runtime.Wallet;
 using Vertigo.Unity._Game.Unity.Authoring;
 using Vertigo.Unity._Game.Unity.Bootstrap;
 using Vertigo.Unity._Game.Unity.Views;
+using Vertigo.Unity._Game.Unity.Persistence;
 using Object = UnityEngine.Object;
 
 namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
@@ -166,11 +168,14 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             Assert.That(Session.GetSnapshot().Status, Is.EqualTo(SessionStatus.Ready));
         }
 
-        [Test]
-        public void BootstrapUsesGameSettingsCurrencyAndStartingBalance()
+        [TestCase(false)]
+        [TestCase(true)]
+        public void BootstrapUsesConfiguredCurrencyAndLoadsSavedBalanceWhenPresent(bool saved)
         {
             var parent = new GameObject("Settings bootstrap test");
             parent.SetActive(false);
+            var directory = Path.Combine(Path.GetTempPath(), "VertigoProgressTests", Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
             var settings = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameSettings>("Assets/_Game/Settings/GameSettings.asset"));
             try
             {
@@ -184,10 +189,15 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
                 var data = new SerializedObject(instance.GetComponent<GameBootstrap>());
                 data.FindProperty("settings").objectReferenceValue = settings;
                 data.ApplyModifiedPropertiesWithoutUndo();
+                var path = Path.Combine(directory, "progress.json");
+                var store = new FileProgressStore(path, settings.CreateStartingRewards(), currency.Id);
+                if (saved)
+                    Assert.That(store.TrySave(new RewardCollection(new[] { new Reward(currency.Id, 123) })), Is.True);
+                instance.GetComponent<GameBootstrap>().Initialize(new FileProgressStore(path, settings.CreateStartingRewards(), currency.Id));
                 parent.SetActive(true);
                 instance.GetComponentInChildren<TapToStartView>().GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
                 var wallet = instance.GetComponentsInChildren<TMP_Text>(true).Single(item => item.name == "ui_text_wallet_amount_value");
-                Assert.That(wallet.text, Is.EqualTo("420"));
+                Assert.That(wallet.text, Is.EqualTo(saved ? "123" : "420"));
                 var icon = instance.GetComponentsInChildren<Image>(true).Single(item => item.name == "ui_image_wallet_icon_value");
                 Assert.That(icon.sprite, Is.EqualTo(currency.Icon));
             }
@@ -195,6 +205,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             {
                 Object.DestroyImmediate(parent);
                 Object.DestroyImmediate(settings);
+                Directory.Delete(directory, true);
             }
         }
 
