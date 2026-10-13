@@ -49,18 +49,26 @@ namespace Vertigo.Unity._Game.Unity.Views
         public override Tween Highlight(WheelSliceView slice)
         {
             ResetVisuals();
-            Icons.Prepare(slice, particleCount, glowSprite, glowColor);
-            var reward = ((RewardSliceData)slice.Slice).Reward;
-            m_ArrivalRow = rewards.PrepareArrival(reward.RewardId);
-            var sequence = DOTween.Sequence();
-            sequence.Append(flyingIcon.rectTransform.DOScale(Icons.Scale * enlargedScale, burstDuration)
-                .SetEase(Ease.OutBack, m_HighlightOvershoot));
-            AddParticleBurst(sequence);
-            AddGlow(sequence);
-            slice.Tier?.Animation.InsertHighlight(sequence, celebration, slice.IconRect, slice.Tier);
-            sequence.Insert(0, rewards.RevealArrival(m_ArrivalRow));
-            sequence.AppendInterval(burstHold);
-            return TrackAnimation(sequence);
+            try
+            {
+                var sequence = CreateAnimation();
+                Icons.Prepare(slice, particleCount, glowSprite, glowColor);
+                var reward = ((RewardSliceData)slice.Slice).Reward;
+                m_ArrivalRow = rewards.PrepareArrival(reward.RewardId);
+                sequence.Append(flyingIcon.rectTransform.DOScale(Icons.Scale * enlargedScale, burstDuration)
+                    .SetEase(Ease.OutBack, m_HighlightOvershoot));
+                AddParticleBurst(sequence);
+                AddGlow(sequence);
+                slice.Tier?.Animation.InsertHighlight(sequence, celebration, slice.IconRect, slice.Tier);
+                sequence.Insert(0, rewards.RevealArrival(m_ArrivalRow));
+                sequence.AppendInterval(burstHold);
+                return sequence;
+            }
+            catch
+            {
+                ResetVisuals();
+                throw;
+            }
         }
 
         private void AddParticleBurst(Sequence sequence)
@@ -94,27 +102,37 @@ namespace Vertigo.Unity._Game.Unity.Views
 
         public override Tween Play(WheelSliceView slice)
         {
-            var target = m_ArrivalRow.IconRect;
-            var sequence = DOTween.Sequence();
-            AddParticleFlights(sequence, target);
+            try
+            {
+                var sequence = CreateAnimation();
+                var target = m_ArrivalRow.IconRect;
+                AddParticleFlights(sequence, target);
 
-            var mainIconDepartureTime = Icons.Particles.Count * flightStagger;
-            AddFlight(sequence, flyingIcon, target, mainIconDepartureTime, m_MainIconArcScale);
-            sequence.Insert(mainIconDepartureTime,
-                flyingIcon.rectTransform.DOScale(Icons.Scale * m_MainIconArrivalScale, flightDuration));
+                var mainIconDepartureTime = Icons.Particles.Count * flightStagger;
+                AddFlight(sequence, flyingIcon, target, mainIconDepartureTime, m_MainIconArcScale);
+                sequence.Insert(mainIconDepartureTime,
+                    flyingIcon.rectTransform.DOScale(Icons.Scale * m_MainIconArrivalScale, flightDuration));
 
-            var firstArrivalTime = flightDuration;
-            var lastArrivalTime = mainIconDepartureTime + flightDuration;
-            var countDuration = lastArrivalTime - firstArrivalTime;
-            var reward = ((RewardSliceData)slice.Slice).Reward;
-            sequence.Insert(firstArrivalTime, m_ArrivalRow.CreateArrivalCount(reward.Amount, countDuration));
-            slice.Tier?.Animation.InsertArrival(sequence, lastArrivalTime, celebration, target, slice.Tier);
-            sequence.AppendInterval(m_ArrivalSettleDuration);
-            return TrackAnimation(sequence);
+                var firstArrivalTime = flightDuration;
+                var lastArrivalTime = mainIconDepartureTime + flightDuration;
+                var countDuration = lastArrivalTime - firstArrivalTime;
+                var reward = ((RewardSliceData)slice.Slice).Reward;
+                sequence.Insert(firstArrivalTime, m_ArrivalRow.CreateArrivalCount(reward.Amount, countDuration));
+                slice.Tier?.Animation.InsertArrival(sequence, lastArrivalTime, celebration, target, slice.Tier);
+                sequence.AppendInterval(m_ArrivalSettleDuration);
+                return sequence;
+            }
+            catch
+            {
+                ResetVisuals();
+                throw;
+            }
         }
 
-        private Tween TrackAnimation(Tween animation)
+        private Sequence CreateAnimation()
         {
+            // Own the sequence before a behavior can add tweens or fail during construction.
+            var animation = DOTween.Sequence();
             m_Animation = animation;
             animation.OnComplete(() => ReleaseAnimation(animation));
             animation.OnKill(() => ReleaseAnimation(animation));
