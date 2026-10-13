@@ -122,10 +122,21 @@ namespace Vertigo.Unity._Game.Unity.Bootstrap
             m_Presenter?.Detach();
         }
 
-        private void Update()
+        // DOTween completes its Update callbacks before the watchdog checks the frame.
+        private void LateUpdate()
+        {
+            AdvancePresentation(Time.unscaledDeltaTime);
+        }
+
+        private void AdvancePresentation(float elapsed)
         {
             if (m_HasStarted)
-                m_Presenter?.AdvancePresentation(TimeSpan.FromSeconds(Time.unscaledDeltaTime));
+            {
+                // A suspended or stalled frame is not time spent waiting for an active animation.
+                // Keep unscaled timing, but bound its contribution like Unity's simulation timestep.
+                var activeElapsed = Mathf.Min(elapsed, Time.maximumDeltaTime);
+                m_Presenter?.AdvancePresentation(TimeSpan.FromSeconds(activeElapsed));
+            }
         }
     }
 }
