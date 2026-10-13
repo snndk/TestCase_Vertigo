@@ -2796,6 +2796,7 @@ MonoBehaviour:
   wheel: {fileID: 8546253114794874879}
   input: {fileID: 812341990123450001}
   exitLabel: {fileID: 5486888726267078628}
+  exitFeedback: {fileID: 71988620424833848}
   wheelTitle: {fileID: 1489350677492629628}
   wallet: {fileID: 1507067518732024619}
   walletIcon: {fileID: 4177591823077766116}
@@ -3464,6 +3465,7 @@ GameObject:
   - component: {fileID: 7482486659407031189}
   - component: {fileID: 801744890501179564}
   - component: {fileID: 4055638136571675514}
+  - component: {fileID: 71988620424833848}
   m_Layer: 0
   m_Name: ui_button_exit_value
   m_TagString: Untagged
@@ -3483,7 +3485,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2682491703432966707}
+  - {fileID: 605163967403642995}
   m_Father: {fileID: 6514375698233689746}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3512,7 +3514,7 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 0
@@ -3569,7 +3571,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 0
-  m_TargetGraphic: {fileID: 7482486659407031189}
+  m_TargetGraphic: {fileID: 4451316509844007243}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -3586,6 +3588,25 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Views.GameButton
   button: {fileID: 801744890501179564}
+--- !u!114 &71988620424833848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1841353397139993872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d00592218d6597f4c96c32ff71eee37a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Views.CashOutButtonFeedback
+  motion: {fileID: 605163967403642995}
+  background: {fileID: 4451316509844007243}
+  availableSprite: {fileID: 21300000, guid: d962a0416437ca443b3c5ce87eefb833, type: 3}
+  unavailableSprite: {fileID: 21300000, guid: 6882a4ca4afad6c42b019a18235e7486, type: 3}
+  entranceScale: 1.08
+  breathingScale: 1.025
+  breathingDuration: 0.9
 --- !u!1 &1882303181155327345
 GameObject:
   m_ObjectHideFlags: 0
@@ -9248,7 +9269,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6104659053750059572}
+  m_Father: {fileID: 605163967403642995}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -12361,6 +12382,82 @@ MonoBehaviour:
   m_Sprite: {fileID: 21300000, guid: b7bd856e31e4fcc408986d52dfdbb7a2, type: 3}
   m_Type: 1
   m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!1 &6911326167000609556
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 605163967403642995}
+  - component: {fileID: 1961390497994863716}
+  - component: {fileID: 4451316509844007243}
+  m_Layer: 0
+  m_Name: ui_group_exit_motion_value
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &605163967403642995
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6911326167000609556}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2682491703432966707}
+  m_Father: {fileID: 6104659053750059572}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &1961390497994863716
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6911326167000609556}
+  m_CullTransparentMesh: 1
+--- !u!114 &4451316509844007243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6911326167000609556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 0
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 6882a4ca4afad6c42b019a18235e7486, type: 3}
+  m_Type: 1
+  m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1

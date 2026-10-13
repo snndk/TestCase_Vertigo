@@ -14,6 +14,7 @@ namespace Vertigo.Unity._Game.Unity.Views
         [SerializeField] private WheelView wheel;
         [SerializeField] private GameInputController input;
         [SerializeField] private TMP_Text exitLabel;
+        [SerializeField] private CashOutButtonFeedback exitFeedback;
         [SerializeField] private TMP_Text wheelTitle;
         [SerializeField] private TMP_Text wallet;
         [SerializeField] private Image walletIcon;
@@ -50,12 +51,14 @@ namespace Vertigo.Unity._Game.Unity.Views
         public void ShowStartupError(string message)
         {
             input.Apply(null);
+            exitFeedback.SetAvailable(false);
             error.text = message;
         }
 
         public void Render(GameScreenState state)
         {
             input.Apply(state);
+            exitFeedback.SetAvailable(state.CanCashOut);
             wheel.Bind(state.Round);
             var tier = m_Configuration.GetTier(state.Round.Tier);
             wheelTitle.text = tier.Title;
