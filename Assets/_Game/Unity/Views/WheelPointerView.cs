@@ -6,12 +6,13 @@ namespace Vertigo.Unity._Game.Unity.Views
     public class WheelPointerView : MonoBehaviour
     {
         [SerializeField] private RectTransform motion;
+        [SerializeField, Range(0f, 90f)] private float deflectionAngle = 38f;
         private Tween m_Tween;
 
         public void Tick()
         {
             m_Tween?.Kill();
-            var angle = -22f;
+            var angle = -deflectionAngle;
             motion.localRotation = Quaternion.Euler(0, 0, angle);
             m_Tween = DOTween.To(() => angle, value =>
             {

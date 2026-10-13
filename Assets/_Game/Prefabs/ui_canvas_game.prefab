@@ -4406,6 +4406,7 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Views.WheelPointerView
   motion: {fileID: 7796739676920418553}
+  deflectionAngle: 38
 --- !u!1 &2415539843422824260
 GameObject:
   m_ObjectHideFlags: 0
