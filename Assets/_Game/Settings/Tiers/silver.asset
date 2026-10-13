@@ -23,17 +23,25 @@ MonoBehaviour:
   pool:
   - slice: {fileID: 11400000, guid: 6770d568f7b75234494e7f6e4e72c51d, type: 2}
     weight: 100
+    spinWeight: 1
   - slice: {fileID: 11400000, guid: 7023a9639261dd0429d0f670347d3d68, type: 2}
     weight: 100
+    spinWeight: 1
   - slice: {fileID: 11400000, guid: 4c52e108390997f40848a8c094a1c416, type: 2}
     weight: 100
+    spinWeight: 1
   - slice: {fileID: 11400000, guid: 8f55bd5421a12284197186dc4b9f8255, type: 2}
     weight: 100
+    spinWeight: 1
   - slice: {fileID: 11400000, guid: 0583167f3df75624e87071e3a98ef7d4, type: 2}
     weight: 100
+    spinWeight: 1
   - slice: {fileID: 11400000, guid: db8a13e0e79564f44984bae2f6860506, type: 2}
     weight: 100
+    spinWeight: 1
   - slice: {fileID: 11400000, guid: 79d89370fb933ff44866d54a6f0f6116, type: 2}
     weight: 100
+    spinWeight: 1
   - slice: {fileID: 11400000, guid: cc35132f2dc072144ba5d7e669d83427, type: 2}
     weight: 100
+    spinWeight: 1

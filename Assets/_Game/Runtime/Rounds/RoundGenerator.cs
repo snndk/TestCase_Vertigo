@@ -21,13 +21,17 @@ namespace Vertigo.Runtime._Game.Runtime.Rounds
         {
             var tier = ZoneRules.GetTier(zone);
             var slices = new List<SliceData>(m_Configuration.SliceCount);
+            var spinWeights = new List<int>(m_Configuration.SliceCount);
             var candidates = m_Configuration.GetCandidates(tier);
             var indices = m_Selector.Select(candidates, m_Configuration.SliceCount);
             foreach (var index in indices)
+            {
                 slices.Add(candidates[index].Definition.CreateData(zone));
+                spinWeights.Add(candidates[index].SpinWeight);
+            }
 
             RoundValidator.Validate(m_Configuration, zone, slices, indices);
-            return new Round(zone, tier, slices, indices);
+            return new Round(zone, tier, slices, indices, spinWeights);
         }
 
         internal RoundSlice CreateBehavior(Round round, int index, SliceContext context)

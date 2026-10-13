@@ -123,7 +123,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             Presenter.Attach();
             Random.Index = -1;
             LogAssert.Expect(LogType.Exception,
-                new System.Text.RegularExpressions.Regex("InvalidOperationException: The random source returned an invalid slice index"));
+                new System.Text.RegularExpressions.Regex("InvalidOperationException: The random source returned an invalid weighted roll"));
             Presenter.AdvancePresentation(TimeSpan.Zero);
 
             var tap = Root.GetComponentInChildren<AnimationTapView>();

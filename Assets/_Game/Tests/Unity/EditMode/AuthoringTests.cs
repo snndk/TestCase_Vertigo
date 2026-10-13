@@ -54,6 +54,29 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.EditMode
         }
 
         [Test]
+        public void InspectorSpinWeightIsIndependentFromInclusionWeight()
+        {
+            var source = AssetDatabase.LoadAssetAtPath<WheelConfigurationAsset>(m_ConfigPath);
+            var tier = Object.Instantiate(source.GetTier(WheelTier.Silver));
+            try
+            {
+                var data = new SerializedObject(tier);
+                var entry = data.FindProperty("pool").GetArrayElementAtIndex(0);
+                entry.FindPropertyRelative("weight").intValue = 25;
+                entry.FindPropertyRelative("spinWeight").intValue = 70;
+                data.ApplyModifiedPropertiesWithoutUndo();
+                var runtime = tier.CreateCandidates()[0];
+                Assert.That(runtime.Weight, Is.EqualTo(25));
+                Assert.That(runtime.SpinWeight, Is.EqualTo(70));
+                Assert.That(source.GetTier(WheelTier.Silver).CreateCandidates()[0].SpinWeight, Is.EqualTo(1));
+            }
+            finally
+            {
+                Object.DestroyImmediate(tier);
+            }
+        }
+
+        [Test]
         public void DifferentAssetsWithTheSameRewardIdAreRejected()
         {
             var source = AssetDatabase.LoadAssetAtPath<WheelConfigurationAsset>(m_ConfigPath);

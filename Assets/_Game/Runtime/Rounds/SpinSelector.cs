@@ -19,17 +19,31 @@ namespace Vertigo.Runtime._Game.Runtime.Rounds
                 throw new ArgumentNullException(nameof(round));
 
             var indices = new List<int>(round.Slices.Count);
+            var totalWeight = 0;
             for (var index = 0; index < round.Slices.Count; index++)
+            {
                 if (eligible == null || eligible(round.Slices[index]))
+                {
                     indices.Add(index);
+                    totalWeight = checked(totalWeight + round.SpinWeights[index]);
+                }
+            }
             if (indices.Count == 0)
                 throw new InvalidOperationException("The round has no eligible winning slices.");
 
-            var selection = m_Random.Next(indices.Count);
-            if (selection < 0 || selection >= indices.Count)
-                throw new InvalidOperationException("The random source returned an invalid slice index.");
+            var selection = m_Random.Next(totalWeight);
+            if (selection < 0 || selection >= totalWeight)
+                throw new InvalidOperationException("The random source returned an invalid weighted roll.");
 
-            return indices[selection];
+            foreach (var index in indices)
+            {
+                var weight = round.SpinWeights[index];
+                if (selection < weight)
+                    return index;
+                selection -= weight;
+            }
+
+            throw new InvalidOperationException("The weighted roll did not match a slice.");
         }
     }
 }
