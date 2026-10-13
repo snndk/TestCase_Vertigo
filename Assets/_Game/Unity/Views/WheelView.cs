@@ -66,7 +66,7 @@ namespace Vertigo.Unity._Game.Unity.Views
             motion.localRotation = Quaternion.identity;
             for (var index = 0; index < slices.Length; index++)
             {
-                slices[index].Bind(round.Slices[index], tier.GetSlice(round.SourceIndices[index]));
+                slices[index].Bind(round.Slices[index], tier.GetSlice(round.SourceIndices[index]), tier);
                 slices[index].KeepUpright(0);
             }
         }

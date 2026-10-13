@@ -16,7 +16,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
     public class WheelAnimationTests : GameViewTestFixture
     {
         [TestCase(5, 4)]
-        [TestCase(30, 7)]
+        [TestCase(30, 8)]
         [TestCase(6, 0)]
         public void TierTransitionSwapsAtTheSmallestScaleAndRestoresTheWheel(int zone, int sparkleCount)
         {

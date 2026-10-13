@@ -16,9 +16,11 @@ namespace Vertigo.Unity._Game.Unity.Views
         public Sprite Icon => icon.sprite;
         public RectTransform IconRect => icon.rectTransform;
         public SliceData Slice { get; private set; }
-        public void Bind(SliceData slice, SliceAsset visual)
+        public WheelTierAsset Tier { get; private set; }
+        public void Bind(SliceData slice, SliceAsset visual, WheelTierAsset tier = null)
         {
             Slice = slice;
+            Tier = tier;
             icon.sprite = visual.Icon;
             SpriteLayout.Fit(icon, iconBounds);
             amount.text = visual.GetCaption(slice);

@@ -16,8 +16,10 @@ MonoBehaviour:
   titleColor: {r: 1, g: 0.78, b: 0.25, a: 1}
   statusMessage: RISK-FREE SPIN - NO BOMB
   transitionColor: {r: 1, g: 0.78, b: 0.25, a: 1}
-  transitionGlowStrength: 0.75
-  transitionSparkles: 7
+  transitionGlowStrength: 0.8
+  transitionSparkles: 8
+  celebrationStrength: 1
+  celebrationMessage: GOLD ZONE
   wheel: {fileID: 21300000, guid: 516b845cec04f814893a071381f26cdd, type: 3}
   indicator: {fileID: 21300000, guid: 5693d71100808b74f84ae49af6c2ee9b, type: 3}
   pool:

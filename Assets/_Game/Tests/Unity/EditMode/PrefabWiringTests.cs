@@ -46,7 +46,9 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.EditMode
                     continue;
                 var property = new SerializedObject(component).GetIterator();
                 while (property.NextVisible(true))
-                    if (property.propertyType == SerializedPropertyType.ObjectReference)
+                    // UI graphics legitimately use Unity's default material when this field is empty.
+                    if (property.propertyType == SerializedPropertyType.ObjectReference &&
+                        !(component is Graphic && property.propertyPath == "m_Material"))
                         Assert.That(property.objectReferenceValue, Is.Not.Null, component.GetType().Name + "." + property.propertyPath);
             }
             foreach (var button in prefab.GetComponentsInChildren<Button>(true))

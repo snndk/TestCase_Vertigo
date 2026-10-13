@@ -2,6 +2,7 @@ using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using Vertigo.Unity._Game.Unity.Authoring;
 
 namespace Vertigo.Unity._Game.Unity.Views
@@ -11,6 +12,8 @@ namespace Vertigo.Unity._Game.Unity.Views
         [SerializeField] private RectTransform motion;
         [SerializeField] private Image glow;
         [SerializeField] private Image[] sparkles;
+        [SerializeField] private Image backdrop;
+        [SerializeField] private TMP_Text announcement;
         [SerializeField, Min(0.01f)] private float shrinkDuration = 0.14f;
         [SerializeField, Min(0.01f)] private float expandDuration = 0.31f;
         [SerializeField, Range(0.5f, 1f)] private float shrinkScale = 0.92f;
@@ -33,9 +36,31 @@ namespace Vertigo.Unity._Game.Unity.Views
             m_Sequence = DOTween.Sequence().SetUpdate(true);
             m_Sequence.Append(motion.DOScale(m_RestScale * shrinkScale, shrinkDuration).SetEase(Ease.InQuad));
             m_Sequence.AppendCallback(ApplyAppearance);
-            m_Sequence.Append(motion.DOScale(m_RestScale, expandDuration).SetEase(Ease.OutBack, expandOvershoot));
-            AddLight(m_Sequence, tier);
+            var expansionDuration = expandDuration * (1f + tier.CelebrationStrength);
+            m_Sequence.Append(motion.DOScale(m_RestScale, expansionDuration)
+                .SetEase(Ease.OutBack, expandOvershoot + tier.CelebrationStrength * 2f));
+            AddLight(m_Sequence, tier, expansionDuration);
+            if (tier.CelebrationStrength > 0)
+                AddCelebration(m_Sequence, tier);
             m_Sequence.OnComplete(Finish);
+        }
+
+        private void AddCelebration(Sequence sequence, WheelTierAsset tier)
+        {
+            announcement.text = tier.CelebrationMessage;
+            announcement.color = tier.TransitionColor;
+            announcement.alpha = 0;
+            announcement.gameObject.SetActive(true);
+            backdrop.gameObject.SetActive(true);
+            var progress = 0f;
+            sequence.Insert(0, DOTween.To(() => progress, value =>
+            {
+                progress = value;
+                var strength = Mathf.Sin(value * Mathf.PI) * tier.CelebrationStrength;
+                backdrop.color = new Color(0.01f, 0.015f, 0.035f, strength * 0.55f);
+                announcement.alpha = Mathf.Min(1, strength * 2);
+                announcement.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.9f, 1.04f, value);
+            }, 1f, 0.85f).SetEase(Ease.Linear));
         }
 
         private void PrepareLight(WheelTierAsset tier)
@@ -51,7 +76,7 @@ namespace Vertigo.Unity._Game.Unity.Views
             }
         }
 
-        private void AddLight(Sequence sequence, WheelTierAsset tier)
+        private void AddLight(Sequence sequence, WheelTierAsset tier, float duration)
         {
             var count = Mathf.Min(tier.TransitionSparkles, sparkles.Length);
             var progress = 0f;
@@ -64,7 +89,7 @@ namespace Vertigo.Unity._Game.Unity.Views
                 glow.color = color;
                 glow.rectTransform.localScale = Vector3.one * Mathf.Lerp(m_GlowStartScale, m_GlowEndScale, value);
                 UpdateSparkles(count, value, brightness, tier.TransitionColor);
-            }, 1f, expandDuration).SetEase(Ease.Linear));
+            }, 1f, duration).SetEase(Ease.Linear));
         }
 
         private void UpdateSparkles(int count, float progress, float brightness, Color color)
@@ -101,6 +126,10 @@ namespace Vertigo.Unity._Game.Unity.Views
             glow.gameObject.SetActive(false);
             foreach (var sparkle in sparkles)
                 sparkle.gameObject.SetActive(false);
+            if (backdrop != null)
+                backdrop.gameObject.SetActive(false);
+            if (announcement != null)
+                announcement.gameObject.SetActive(false);
         }
 
         private void OnDisable() => Finish();
