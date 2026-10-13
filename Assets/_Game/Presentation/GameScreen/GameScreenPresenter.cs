@@ -179,6 +179,7 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
         {
             HandleInput(() =>
             {
+                var cost = m_Session.GetSnapshot().ReviveCost;
                 var status = m_Session.RequestRevive();
                 if (status == CommandStatus.Accepted)
                     m_Error = null;
@@ -189,6 +190,8 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
                 else
                     return;
                 Synchronize();
+                if (status == CommandStatus.Accepted)
+                    m_View.ShowSpending(cost);
             });
         }
 

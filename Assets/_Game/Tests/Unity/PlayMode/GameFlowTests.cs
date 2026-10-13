@@ -126,6 +126,8 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             Assert.That(Session.GetSnapshot().Progress.GetAmount("Gold"), Is.EqualTo(225));
             Assert.That(Session.GetSnapshot().Round.Zone, Is.EqualTo(3));
             Assert.That(Session.GetSnapshot().RunId, Is.EqualTo(runId));
+            Assert.That(Text("wallet_spending"), Does.StartWith("−25 "));
+            yield return new WaitForSecondsRealtime(0.65f);
             Assert.That(Text("wallet_amount"), Is.EqualTo("225"));
             yield return SpinAndWait();
             StringAssert.StartsWith("REVIVE 50 ", Text("bomb_revive_label"));
@@ -163,6 +165,7 @@ namespace Vertigo.Tests.Unity.Assets._Game.Tests.Unity.PlayMode
             yield return SpinAndWait();
             Assert.That(Text("bomb_revive_label"), Is.EqualTo("REVIVE 25 " + currency.DisplayName));
             Button("bomb_revive").onClick.Invoke();
+            yield return new WaitForSecondsRealtime(0.65f);
             Assert.That(Text("wallet_amount"), Is.EqualTo("75"));
             Assert.That(Session.GetSnapshot().Progress.GetAmount(currency.Id), Is.EqualTo(75));
             Assert.That(Session.GetSnapshot().Status, Is.EqualTo(SessionStatus.Ready));

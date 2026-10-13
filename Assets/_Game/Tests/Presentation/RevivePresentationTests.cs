@@ -31,6 +31,7 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
             Assert.That(m_Context.View.State.Error, Is.Not.Null);
             Assert.That(m_Context.View.State.CanRevive, Is.True);
             Assert.That(m_Context.View.State.Progress.GetAmount("coins"), Is.EqualTo(100));
+            Assert.That(m_Context.View.Spending, Is.Empty);
             m_Context.Store.FailWrites = false;
             m_Context.Input.RequestRevive();
             Assert.That(m_Context.View.State.Error, Is.Null);
@@ -38,6 +39,11 @@ namespace Vertigo.Tests.Presentation.Assets._Game.Tests.Presentation
             Assert.That(m_Context.View.State.CanSpin, Is.True);
             Assert.That(m_Context.View.State.Loot.GetAmount("coins"), Is.EqualTo(10));
             Assert.That(m_Context.View.State.Progress.GetAmount("coins"), Is.EqualTo(75));
+            Assert.That(m_Context.View.Spending.Count, Is.EqualTo(1));
+            Assert.That(m_Context.View.Spending[0].Amount, Is.EqualTo(25));
+            m_Context.Input.RequestRevive();
+            m_Context.Presenter.Refresh();
+            Assert.That(m_Context.View.Spending.Count, Is.EqualTo(1));
         }
 
         [Test]

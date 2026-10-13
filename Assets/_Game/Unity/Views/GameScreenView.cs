@@ -1,3 +1,4 @@
+using Vertigo.Runtime._Game.Runtime.Rewards;
 using System;
 using TMPro;
 using Vertigo.Unity._Game.Unity.Input;
@@ -16,7 +17,7 @@ namespace Vertigo.Unity._Game.Unity.Views
         [SerializeField] private TMP_Text exitLabel;
         [SerializeField] private CashOutButtonFeedback exitFeedback;
         [SerializeField] private TMP_Text wheelTitle;
-        [SerializeField] private TMP_Text wallet;
+        [SerializeField] private WalletFeedbackView walletFeedback;
         [SerializeField] private Image walletIcon;
         [SerializeField] private Vector2 walletIconBounds = new Vector2(40, 34);
         [SerializeField] private TMP_Text status;
@@ -41,6 +42,7 @@ namespace Vertigo.Unity._Game.Unity.Views
                 throw new ArgumentException("Currency must reference the canonical reward asset.", nameof(currency));
             m_Configuration = configuration;
             m_Currency = currency;
+            walletFeedback.ResetBalance();
             walletIcon.sprite = currency.Icon;
             SpriteLayout.Fit(walletIcon, walletIconBounds);
             loot.Initialize(catalog);
@@ -63,7 +65,7 @@ namespace Vertigo.Unity._Game.Unity.Views
             var tier = m_Configuration.GetTier(state.Round.Tier);
             wheelTitle.text = tier.Title;
             wheelTitle.color = tier.TitleColor;
-            wallet.text = state.Progress.GetAmount(m_Currency.Id).ToString("N0");
+            walletFeedback.ShowBalance(state.Progress.GetAmount(m_Currency.Id));
             loot.Show(state.Loot);
             zones.Show(state.Round.Zone);
             exitLabel.text = state.CanCashOut ? "COLLECT & EXIT" : "EXIT AT SAFE ZONE";
@@ -75,5 +77,10 @@ namespace Vertigo.Unity._Game.Unity.Views
             m_LastError = state.Error;
         }
 
+        public void ShowSpending(Reward cost)
+        {
+            if (cost != null && cost.RewardId == m_Currency.Id)
+                walletFeedback.ShowSpending(cost.Amount, m_Currency.DisplayName);
+        }
     }
 }
