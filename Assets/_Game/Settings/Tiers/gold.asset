@@ -18,8 +18,7 @@ MonoBehaviour:
   transitionColor: {r: 1, g: 0.78, b: 0.25, a: 1}
   transitionGlowStrength: 0.8
   transitionSparkles: 8
-  celebrationStrength: 1
-  celebrationMessage: GOLD ZONE
+  animation: {fileID: 11400000, guid: c5643bbaa71c1de41b10497dfcf1d2c3, type: 2}
   wheel: {fileID: 21300000, guid: 516b845cec04f814893a071381f26cdd, type: 3}
   indicator: {fileID: 21300000, guid: 5693d71100808b74f84ae49af6c2ee9b, type: 3}
   pool:

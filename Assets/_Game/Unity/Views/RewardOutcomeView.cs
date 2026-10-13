@@ -57,9 +57,7 @@ namespace Vertigo.Unity._Game.Unity.Views
                 .SetEase(Ease.OutBack, m_HighlightOvershoot));
             AddParticleBurst(sequence);
             AddGlow(sequence);
-            if (slice.Tier != null && slice.Tier.CelebrationStrength > 0)
-                sequence.Insert(0, celebration.CreateHighlight(slice.IconRect,
-                    slice.Tier.TransitionColor, slice.Tier.CelebrationStrength));
+            slice.Tier?.Animation.InsertHighlight(sequence, celebration, slice.IconRect, slice.Tier);
             sequence.Insert(0, rewards.RevealArrival(m_ArrivalRow));
             sequence.AppendInterval(burstHold);
             return TrackAnimation(sequence);
@@ -110,9 +108,7 @@ namespace Vertigo.Unity._Game.Unity.Views
             var countDuration = lastArrivalTime - firstArrivalTime;
             var reward = ((RewardSliceData)slice.Slice).Reward;
             sequence.Insert(firstArrivalTime, m_ArrivalRow.CreateArrivalCount(reward.Amount, countDuration));
-            if (slice.Tier != null && slice.Tier.CelebrationStrength > 0)
-                sequence.Insert(lastArrivalTime, celebration.CreateArrival(target,
-                    slice.Tier.TransitionColor, slice.Tier.CelebrationStrength));
+            slice.Tier?.Animation.InsertArrival(sequence, lastArrivalTime, celebration, target, slice.Tier);
             sequence.AppendInterval(m_ArrivalSettleDuration);
             return TrackAnimation(sequence);
         }

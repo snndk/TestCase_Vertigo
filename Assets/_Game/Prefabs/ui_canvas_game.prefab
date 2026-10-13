@@ -87,6 +87,7 @@ GameObject:
   - component: {fileID: 8546253114794874879}
   - component: {fileID: 296194764485535324}
   - component: {fileID: 427284254898402584}
+  - component: {fileID: 7260264465473868180}
   m_Layer: 0
   m_Name: ui_group_wheel
   m_TagString: Untagged
@@ -176,8 +177,7 @@ MonoBehaviour:
   - {fileID: 5366599618040724105}
   - {fileID: 8425943136929211003}
   - {fileID: 6043004142604350570}
-  backdrop: {fileID: 7044504049298285546}
-  announcement: {fileID: 274343450845164878}
+  celebration: {fileID: 7260264465473868180}
   shrinkDuration: 0.14
   expandDuration: 0.31
   shrinkScale: 0.92
@@ -195,6 +195,21 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Views.LuckyOutcomeView
   duration: 0.5
+--- !u!114 &7260264465473868180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2761043065280582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93e90380218d10443ae3701a1562e819, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Vertigo.Unity::Vertigo.Unity._Game.Unity.Views.WheelEntranceCelebration
+  backdrop: {fileID: 7044504049298285546}
+  announcement: {fileID: 274343450845164878}
+  duration: 0.85
 --- !u!1 &18193655307985315
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,8 +13,7 @@ namespace Vertigo.Unity._Game.Unity.Authoring
         [SerializeField] private Color transitionColor = Color.white;
         [SerializeField, Range(0f, 1f)] private float transitionGlowStrength = 0.3f;
         [SerializeField, Range(0, 8)] private int transitionSparkles;
-        [SerializeField, Range(0f, 1f)] private float celebrationStrength;
-        [SerializeField] private string celebrationMessage;
+        [SerializeField] private WheelAnimationAsset animation;
         [SerializeField] private Sprite wheel;
         [SerializeField] private Sprite indicator;
         [SerializeField] private WheelPoolEntry[] pool = Array.Empty<WheelPoolEntry>();
@@ -24,8 +23,7 @@ namespace Vertigo.Unity._Game.Unity.Authoring
         public Color TransitionColor => transitionColor;
         public float TransitionGlowStrength => transitionGlowStrength;
         public int TransitionSparkles => transitionSparkles;
-        public float CelebrationStrength => celebrationStrength;
-        public string CelebrationMessage => celebrationMessage;
+        public WheelAnimationAsset Animation => animation;
         public Sprite Wheel => wheel;
         public Sprite Indicator => indicator;
         public int CandidateCount => pool.Length;
@@ -33,6 +31,8 @@ namespace Vertigo.Unity._Game.Unity.Authoring
 
         public WeightedSlice[] CreateCandidates()
         {
+            if (animation == null)
+                throw new InvalidOperationException(name + " needs a wheel animation behavior.");
             if (wheel == null || indicator == null)
                 throw new InvalidOperationException(name + " needs wheel and indicator sprites.");
             var candidates = new WeightedSlice[pool.Length];

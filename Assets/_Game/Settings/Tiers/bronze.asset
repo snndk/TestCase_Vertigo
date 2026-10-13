@@ -18,6 +18,7 @@ MonoBehaviour:
   transitionColor: {r: 1, g: 0.65, b: 0.3, a: 1}
   transitionGlowStrength: 0.18
   transitionSparkles: 0
+  animation: {fileID: 11400000, guid: f3dbf131f6c5c9b4ba0340a0dc174a07, type: 2}
   wheel: {fileID: 21300000, guid: 0299418cdb8ff004da2ee76f4f0ad24d, type: 3}
   indicator: {fileID: 21300000, guid: 5195ea8b4348e004fbf300f9b4203afe, type: 3}
   pool:

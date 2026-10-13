@@ -2,7 +2,6 @@ using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using Vertigo.Unity._Game.Unity.Authoring;
 
 namespace Vertigo.Unity._Game.Unity.Views
@@ -12,8 +11,7 @@ namespace Vertigo.Unity._Game.Unity.Views
         [SerializeField] private RectTransform motion;
         [SerializeField] private Image glow;
         [SerializeField] private Image[] sparkles;
-        [SerializeField] private Image backdrop;
-        [SerializeField] private TMP_Text announcement;
+        [SerializeField] private WheelEntranceCelebration celebration;
         [SerializeField, Min(0.01f)] private float shrinkDuration = 0.14f;
         [SerializeField, Min(0.01f)] private float expandDuration = 0.31f;
         [SerializeField, Range(0.5f, 1f)] private float shrinkScale = 0.92f;
@@ -32,35 +30,34 @@ namespace Vertigo.Unity._Game.Unity.Views
             Finish();
             m_RestScale = motion.localScale;
             m_ApplyAppearance = applyAppearance;
-            PrepareLight(tier);
             m_Sequence = DOTween.Sequence().SetUpdate(true);
-            m_Sequence.Append(motion.DOScale(m_RestScale * shrinkScale, shrinkDuration).SetEase(Ease.InQuad));
-            m_Sequence.AppendCallback(ApplyAppearance);
-            var expansionDuration = expandDuration * (1f + tier.CelebrationStrength);
-            m_Sequence.Append(motion.DOScale(m_RestScale, expansionDuration)
-                .SetEase(Ease.OutBack, expandOvershoot + tier.CelebrationStrength * 2f));
-            AddLight(m_Sequence, tier, expansionDuration);
-            if (tier.CelebrationStrength > 0)
-                AddCelebration(m_Sequence, tier);
-            m_Sequence.OnComplete(Finish);
+            try
+            {
+                tier.Animation.BuildEntrance(m_Sequence, this, tier);
+                m_Sequence.OnComplete(Finish);
+            }
+            catch
+            {
+                Finish();
+                throw;
+            }
         }
 
-        private void AddCelebration(Sequence sequence, WheelTierAsset tier)
+        public void AppendTransition(Sequence sequence, WheelTierAsset tier,
+            float expansionMultiplier = 1f, float extraOvershoot = 0f)
         {
-            announcement.text = tier.CelebrationMessage;
-            announcement.color = tier.TransitionColor;
-            announcement.alpha = 0;
-            announcement.gameObject.SetActive(true);
-            backdrop.gameObject.SetActive(true);
-            var progress = 0f;
-            sequence.Insert(0, DOTween.To(() => progress, value =>
-            {
-                progress = value;
-                var strength = Mathf.Sin(value * Mathf.PI) * tier.CelebrationStrength;
-                backdrop.color = new Color(0.01f, 0.015f, 0.035f, strength * 0.55f);
-                announcement.alpha = Mathf.Min(1, strength * 2);
-                announcement.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.9f, 1.04f, value);
-            }, 1f, 0.85f).SetEase(Ease.Linear));
+            PrepareLight(tier);
+            sequence.Append(motion.DOScale(m_RestScale * shrinkScale, shrinkDuration).SetEase(Ease.InQuad));
+            sequence.AppendCallback(ApplyAppearance);
+            var expansionDuration = expandDuration * expansionMultiplier;
+            sequence.Append(motion.DOScale(m_RestScale, expansionDuration)
+                .SetEase(Ease.OutBack, expandOvershoot + extraOvershoot));
+            AddLight(sequence, tier, expansionDuration);
+        }
+
+        public Tween CreateCelebration(string message, Color color, float strength)
+        {
+            return celebration.Create(message, color, strength);
         }
 
         private void PrepareLight(WheelTierAsset tier)
@@ -126,10 +123,8 @@ namespace Vertigo.Unity._Game.Unity.Views
             glow.gameObject.SetActive(false);
             foreach (var sparkle in sparkles)
                 sparkle.gameObject.SetActive(false);
-            if (backdrop != null)
-                backdrop.gameObject.SetActive(false);
-            if (announcement != null)
-                announcement.gameObject.SetActive(false);
+            if (celebration != null)
+                celebration.ResetVisuals();
         }
 
         private void OnDisable() => Finish();
