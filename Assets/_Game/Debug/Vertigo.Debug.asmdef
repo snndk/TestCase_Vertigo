@@ -1,0 +1,7 @@
+{
+    "name": "Vertigo.Debug",
+    "rootNamespace": "Vertigo.Debug",
+    "references": ["Vertigo.Runtime", "Vertigo.Unity", "StompyRobot.SRDebugger", "StompyRobot.SRF"],
+    "autoReferenced": false,
+    "defineConstraints": ["UNITY_EDITOR || DEVELOPMENT_BUILD", "!DISABLE_SRDEBUGGER"]
+}

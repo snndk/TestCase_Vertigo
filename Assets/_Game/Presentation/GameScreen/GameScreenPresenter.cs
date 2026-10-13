@@ -93,6 +93,12 @@ namespace Vertigo.Presentation._Game.Presentation.GameScreen
                 HandleAction(RequestAutomaticSpin);
         }
 
+        public void Refresh()
+        {
+            if (m_IsAttached)
+                Render();
+        }
+
         private void OnSpinRequested()
         {
             if (m_AutomaticSpinPaused && m_Session.CanAutomaticSpin)

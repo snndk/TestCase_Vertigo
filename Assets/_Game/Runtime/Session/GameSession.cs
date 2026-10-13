@@ -10,7 +10,7 @@ namespace Vertigo.Runtime._Game.Runtime.Session
     public class GameSession
     {
         private readonly RoundGenerator m_Rounds;
-        private readonly SpinSelector m_Spins;
+        private readonly ISpinSelector m_Spins;
         private readonly ProgressService m_Progress;
         private readonly Reward m_InitialReviveCost;
         private readonly int m_ReviveIncreasePercent;
@@ -30,15 +30,21 @@ namespace Vertigo.Runtime._Game.Runtime.Session
 
         public GameSession(WheelConfiguration configuration, IRandomSource random, IProgressStore store,
             Reward reviveCost = null, int reviveIncreasePercent = 100)
+            : this(configuration, random, new ProgressService(store), reviveCost, reviveIncreasePercent)
+        {
+        }
+
+        public GameSession(WheelConfiguration configuration, IRandomSource random, ProgressService progress,
+            Reward reviveCost = null, int reviveIncreasePercent = 100, int startingZone = 1, ISpinSelector spinSelector = null)
         {
             if (reviveIncreasePercent < 0)
                 throw new ArgumentOutOfRangeException(nameof(reviveIncreasePercent));
             m_ReviveIncreasePercent = reviveIncreasePercent;
             m_Rounds = new RoundGenerator(configuration, random);
-            m_Spins = new SpinSelector(random);
-            m_Progress = new ProgressService(store);
+            m_Spins = spinSelector ?? new SpinSelector(random);
+            m_Progress = progress ?? throw new ArgumentNullException(nameof(progress));
             m_InitialReviveCost = reviveCost;
-            BeginRun();
+            BeginRun(startingZone);
         }
 
         public SessionSnapshot GetSnapshot()
@@ -85,6 +91,9 @@ namespace Vertigo.Runtime._Game.Runtime.Session
             if (m_AutomaticRun != null)
                 eligible = m_AutomaticRun.CanSelect;
             var winningIndex = m_Spins.SelectSlice(m_Round, eligible);
+            if (winningIndex < 0 || winningIndex >= m_Round.Slices.Count || m_Round.SpinWeights[winningIndex] <= 0 ||
+                (eligible != null && !eligible(m_Round.Slices[winningIndex])))
+                throw new InvalidOperationException("The spin selector returned an ineligible slice.");
             var context = ResolveWinner(winningIndex);
             return CommitSpin(winningIndex, automatic, context);
         }
@@ -223,9 +232,9 @@ namespace Vertigo.Runtime._Game.Runtime.Session
             return CommandStatus.Accepted;
         }
 
-        private void BeginRun()
+        private void BeginRun(int startingZone = 1)
         {
-            var firstRound = m_Rounds.Generate(1);
+            var firstRound = m_Rounds.Generate(startingZone);
             m_ReviveCost = m_InitialReviveCost;
             m_RunId = Guid.NewGuid();
             m_OperationSequence = 0;

@@ -4,7 +4,7 @@ using Vertigo.Runtime._Game.Runtime.Contracts;
 
 namespace Vertigo.Runtime._Game.Runtime.Rounds
 {
-    public class SpinSelector
+    public class SpinSelector : ISpinSelector
     {
         private readonly IRandomSource m_Random;
 

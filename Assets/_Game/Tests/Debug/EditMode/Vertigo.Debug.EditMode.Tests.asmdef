@@ -1,0 +1,11 @@
+{
+    "name": "Vertigo.Debug.EditMode.Tests",
+    "references": ["Vertigo.Runtime", "Vertigo.Debug"],
+    "includePlatforms": ["Editor"],
+    "optionalUnityReferences": ["TestAssemblies"],
+    "autoReferenced": false,
+    "overrideReferences": true,
+    "precompiledReferences": ["nunit.framework.dll"],
+    "defineConstraints": ["!DISABLE_SRDEBUGGER"],
+    "noEngineReferences": true
+}

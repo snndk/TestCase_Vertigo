@@ -19,7 +19,18 @@ namespace Vertigo.Unity._Game.Unity.Bootstrap
         [SerializeField] private TapToStartView startScreen;
         [SerializeField, Min(1)] private float presentationTimeout = 10;
         private GameScreenPresenter m_Presenter;
+        private GameSession m_Session;
         private bool m_HasStarted;
+
+        public GameSettings Settings => settings;
+
+        public SessionSnapshot GetSnapshot() => m_Session?.GetSnapshot();
+
+        public FileProgressStore CreateProgressStore()
+        {
+            return new FileProgressStore(Path.Combine(Application.persistentDataPath, "progress.json"),
+                settings.CreateStartingRewards(), settings.Currency.Id);
+        }
 
         private void Awake()
         {
@@ -29,8 +40,7 @@ namespace Vertigo.Unity._Game.Unity.Bootstrap
             try
             {
                 ValidateReferences();
-                var store = new FileProgressStore(Path.Combine(Application.persistentDataPath, "progress.json"),
-                    settings.CreateStartingRewards(), settings.Currency.Id);
+                var store = CreateProgressStore();
                 Initialize(store);
                 if (store.RecoveredFromBackup)
                     Debug.LogWarning("Saved progress was restored from its backup.", this);
@@ -55,11 +65,32 @@ namespace Vertigo.Unity._Game.Unity.Bootstrap
             ValidateReferences();
             var session = new GameSession(settings.WheelConfiguration.CreateRuntime(), new SystemRandomSource(),
                 store, settings.CreateReviveCost(), settings.ReviveIncreasePercent);
+            ReplaceSession(session);
+        }
+
+        public void ReplaceSession(GameSession session, bool startImmediately = false)
+        {
+            if (session == null)
+                throw new ArgumentNullException(nameof(session));
+
+            ValidateReferences();
+            m_Presenter?.Detach();
             screen.Initialize(settings.WheelConfiguration, settings.Currency);
+            m_Session = session;
             m_Presenter = new GameScreenPresenter(session, screen, screen.Input,
                 new SpinPresentationSequence(screen.Wheel, TimeSpan.FromSeconds(presentationTimeout)));
-            startScreen.Show();
+            if (m_HasStarted || startImmediately)
+            {
+                m_HasStarted = true;
+                if (isActiveAndEnabled)
+                    m_Presenter.Attach();
+                startScreen.Dismiss();
+            }
+            else
+                startScreen.Show();
         }
+
+        public void RefreshPresentation() => m_Presenter?.Refresh();
 
         private void ValidateReferences()
         {

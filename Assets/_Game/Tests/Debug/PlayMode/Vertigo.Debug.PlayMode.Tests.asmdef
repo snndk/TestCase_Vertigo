@@ -1,0 +1,9 @@
+{
+    "name": "Vertigo.Debug.PlayMode.Tests",
+    "references": ["Vertigo.Runtime", "Vertigo.Unity", "Vertigo.Debug", "StompyRobot.SRDebugger", "StompyRobot.SRF", "Unity.ugui", "Unity.TextMeshPro"],
+    "optionalUnityReferences": ["TestAssemblies"],
+    "autoReferenced": false,
+    "overrideReferences": true,
+    "precompiledReferences": ["nunit.framework.dll"],
+    "defineConstraints": ["UNITY_EDITOR", "!DISABLE_SRDEBUGGER"]
+}
